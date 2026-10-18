@@ -13,7 +13,7 @@ for(const q of questions){
   assert.equal(q.options.length,q.part===2?3:4,q.id);
   assert.equal(new Set(q.options).size,q.options.length,q.id);
   assert(Number.isInteger(q.answer)&&q.answer>=0&&q.answer<q.options.length,q.id);
-  if(q.part<5)assert(q.audio&&q.translation,q.id);
+  if(q.part<5){assert(q.audio&&q.translation&&q.audioSrc,q.id);assert(fs.statSync(new URL(q.audioSrc,root)).size>1000,q.id)}
   if(q.part===1)assert(sceneSvg(q.scene).includes('<svg'),q.id);
   if(q.part===5)assert(q.question.includes('_____'),q.id);
   if(q.part===6)assert(q.passage&&q.group&&q.passage.includes('[4]'),q.id);
@@ -50,6 +50,7 @@ assert.equal(run('practiceIds().join()'),'P5-001');
 run("data.history.push({id:'P5-001',correct:true,date:'2026-10-19'});stats()");assert.equal(run('practiceIds().length'),0);
 run("mode='saved'");assert.equal(run('practiceIds().join()'),'P5-001');assert(html.includes('各 Part 進度'));
 run('index=0;playListening()');assert(speech[0].text.includes('A.'));speech[0].onend();assert.equal(speech.length,2);run('stopAudio()');speech[1].onend();assert.equal(speech.length,2);
+run('home()');assert(!html.includes('尚未開發'));
 console.log('PASS: all 120 quiz screens, hidden listening answers, correct-answer feedback, part filtering, v1 history/bookmarks compatibility, audio stop cancellation.');
 // Exercise the actual service worker offline, with a previous-version cache and an unrelated app cache.
 const base='https://noisemore.github.io/toeic-650-lab/',normalize=x=>new URL(typeof x==='string'?x:x.url,base).href;
@@ -58,8 +59,8 @@ const caches={async keys(){return [...stores.keys()]},async delete(k){return sto
 vm.runInNewContext(read('sw.js'),{caches,URL,location:{origin:'https://noisemore.github.io'},fetch:async()=>{if(offline)throw Error('offline');return {ok:true}},self:{registration:{scope:base},clients:{claim(){}},skipWaiting(){},addEventListener(n,f){events[n]=f}}});
 let pending;events.install({waitUntil(p){pending=p}});await pending;events.activate({waitUntil(p){pending=p}});await pending;
 assert(!stores.has('toeic-650-lab-v1.0.1'));assert(stores.has('unrelated-app'));offline=true;
-for(const url of stores.get('toeic-650-lab-v2.0.0').keys()){let result;events.fetch({request:{url,method:'GET'},respondWith(p){result=p}});assert(await result,url)}
+for(const url of stores.get('toeic-650-lab-v2.0.1').keys()){let result;events.fetch({request:{url,method:'GET'},respondWith(p){result=p}});assert(await result,url)}
 let fallback;events.fetch({request:{url:base+'?source=home',method:'GET',mode:'navigate'},respondWith(p){fallback=p}});assert.equal((await fallback).body,'index.html');
 let intercepted=false;events.fetch({request:{url:'https://noisemore.github.io/another-app/',method:'GET'},respondWith(){intercepted=true}});assert(!intercepted);
-console.log('PASS: 10 precached resources offline, navigation fallback, scoped requests, prior-version cache cleanup and unrelated cache preservation.');
+console.log('PASS: 36 precached resources offline, navigation fallback, scoped requests, prior-version cache cleanup and unrelated cache preservation.');
 console.log('NOT COVERED: Android install/flight mode and audible speech output require a real device; live browser smoke test is separate.');

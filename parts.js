@@ -5,18 +5,19 @@ export const extraQuestions=[
     "part": 1,
     "question": "請看情境圖，聆聽四個敘述，選出最符合圖像的一項。",
     "options": [
-      "A woman is typing at a desk.",
+      "A person is working at a computer.",
       "A woman is carrying a box.",
       "A woman is opening a window.",
       "A woman is standing beside a car."
     ],
     "answer": 0,
-    "explanation": "圖中人物坐在桌前使用電腦，typing at a desk 是在書桌前打字。",
+    "explanation": "人物坐在桌前操作電腦；working at a computer 表示正在使用電腦工作。",
     "grammar": "圖片描述",
     "topic": "商務",
     "scene": "office",
-    "audio": "A. A woman is typing at a desk.\nB. A woman is carrying a box.\nC. A woman is opening a window.\nD. A woman is standing beside a car.",
-    "translation": "四個敘述的文字會在作答後顯示。"
+    "audio": "A. A person is working at a computer.\nB. A woman is carrying a box.\nC. A woman is opening a window.\nD. A woman is standing beside a car.",
+    "translation": "四個敘述的文字會在作答後顯示。",
+    "audioSrc": "audio-p1-001.mp3"
   },
   {
     "id": "P1-002",
@@ -34,7 +35,8 @@ export const extraQuestions=[
     "topic": "商務",
     "scene": "warehouse",
     "audio": "A. The shelves are empty.\nB. A worker is pushing a cart loaded with boxes.\nC. Two workers are painting a wall.\nD. A truck is crossing a bridge.",
-    "translation": "四個敘述的文字會在作答後顯示。"
+    "translation": "四個敘述的文字會在作答後顯示。",
+    "audioSrc": "audio-p1-002.mp3"
   },
   {
     "id": "P1-003",
@@ -52,7 +54,8 @@ export const extraQuestions=[
     "topic": "商務",
     "scene": "meeting",
     "audio": "A. Everyone is leaving the room.\nB. A man is cleaning the floor.\nC. People are seated around a conference table.\nD. The chairs are stacked in a corner.",
-    "translation": "四個敘述的文字會在作答後顯示。"
+    "translation": "四個敘述的文字會在作答後顯示。",
+    "audioSrc": "audio-p1-003.mp3"
   },
   {
     "id": "P1-004",
@@ -70,7 +73,8 @@ export const extraQuestions=[
     "topic": "商務",
     "scene": "repair",
     "audio": "A. A technician is inspecting a machine.\nB. A technician is climbing a ladder.\nC. The machine is being loaded onto a truck.\nD. Several people are serving food.",
-    "translation": "四個敘述的文字會在作答後顯示。"
+    "translation": "四個敘述的文字會在作答後顯示。",
+    "audioSrc": "audio-p1-004.mp3"
   },
   {
     "id": "P1-005",
@@ -88,7 +92,8 @@ export const extraQuestions=[
     "topic": "商務",
     "scene": "cafe",
     "audio": "A. The tables are covered with papers.\nB. A customer is reading a newspaper.\nC. The shop is closed for renovation.\nD. A worker is placing cups on a counter.",
-    "translation": "四個敘述的文字會在作答後顯示。"
+    "translation": "四個敘述的文字會在作答後顯示。",
+    "audioSrc": "audio-p1-005.mp3"
   },
   {
     "id": "P1-006",
@@ -106,7 +111,8 @@ export const extraQuestions=[
     "topic": "商務",
     "scene": "park",
     "audio": "A. A boat is approaching the shore.\nB. A person is sitting on a bench beside a tree.\nC. The street is crowded with cars.\nD. A person is washing a bicycle.",
-    "translation": "四個敘述的文字會在作答後顯示。"
+    "translation": "四個敘述的文字會在作答後顯示。",
+    "audioSrc": "audio-p1-006.mp3"
   },
   {
     "id": "P2-001",
@@ -123,7 +129,8 @@ export const extraQuestions=[
     "topic": "商務",
     "audio": "When will the replacement parts arrive?\nA. By Thursday afternoon.\nB. From our local supplier.\nC. They are very expensive.",
     "translation": "替換零件什麼時候會到？",
-    "stimulus": "When will the replacement parts arrive?"
+    "stimulus": "When will the replacement parts arrive?",
+    "audioSrc": "audio-p2-001.mp3"
   },
   {
     "id": "P2-002",
@@ -140,7 +147,8 @@ export const extraQuestions=[
     "topic": "商務",
     "audio": "Who is responsible for the safety inspection?\nA. At the main entrance.\nB. Ms. Lin from engineering.\nC. Every six months.",
     "translation": "誰負責安全檢查？",
-    "stimulus": "Who is responsible for the safety inspection?"
+    "stimulus": "Who is responsible for the safety inspection?",
+    "audioSrc": "audio-p2-002.mp3"
   },
   {
     "id": "P2-003",
@@ -157,7 +165,8 @@ export const extraQuestions=[
     "topic": "商務",
     "audio": "Where should I leave these invoices?\nA. They were paid yesterday.\nB. About twenty dollars.\nC. On the accounting desk.",
     "translation": "這些發票應該放哪裡？",
-    "stimulus": "Where should I leave these invoices?"
+    "stimulus": "Where should I leave these invoices?",
+    "audioSrc": "audio-p2-003.mp3"
   },
   {
     "id": "P2-004",
@@ -174,7 +183,8 @@ export const extraQuestions=[
     "topic": "商務",
     "audio": "Would you like me to book a meeting room?\nA. Yes, that would be helpful.\nB. The meeting was productive.\nC. It has four windows.",
     "translation": "要我幫你訂會議室嗎？",
-    "stimulus": "Would you like me to book a meeting room?"
+    "stimulus": "Would you like me to book a meeting room?",
+    "audioSrc": "audio-p2-004.mp3"
   },
   {
     "id": "P2-005",
@@ -191,7 +201,8 @@ export const extraQuestions=[
     "topic": "商務",
     "audio": "Why was the production line stopped?\nA. At nine this morning.\nB. A sensor needed replacement.\nC. The line is over there.",
     "translation": "為什麼生產線停止了？",
-    "stimulus": "Why was the production line stopped?"
+    "stimulus": "Why was the production line stopped?",
+    "audioSrc": "audio-p2-005.mp3"
   },
   {
     "id": "P2-006",
@@ -208,7 +219,8 @@ export const extraQuestions=[
     "topic": "商務",
     "audio": "How often do you service the vacuum pump?\nA. The pump is downstairs.\nB. It took two hours.\nC. Once every three months.",
     "translation": "你們多久保養真空幫浦一次？",
-    "stimulus": "How often do you service the vacuum pump?"
+    "stimulus": "How often do you service the vacuum pump?",
+    "audioSrc": "audio-p2-006.mp3"
   },
   {
     "id": "P2-007",
@@ -225,7 +237,8 @@ export const extraQuestions=[
     "topic": "商務",
     "audio": "Could you send me the updated schedule?\nA. I'll email it right away.\nB. Yes, the train was late.\nC. It is a new computer.",
     "translation": "可以寄給我更新後的時程嗎？",
-    "stimulus": "Could you send me the updated schedule?"
+    "stimulus": "Could you send me the updated schedule?",
+    "audioSrc": "audio-p2-007.mp3"
   },
   {
     "id": "P2-008",
@@ -242,7 +255,8 @@ export const extraQuestions=[
     "topic": "商務",
     "audio": "The shipment hasn't arrived yet, has it?\nA. No, we are still waiting.\nB. Yes, I like the design.\nC. The warehouse is large.",
     "translation": "貨還沒到，對吧？",
-    "stimulus": "The shipment hasn't arrived yet, has it?"
+    "stimulus": "The shipment hasn't arrived yet, has it?",
+    "audioSrc": "audio-p2-008.mp3"
   },
   {
     "id": "P2-009",
@@ -259,7 +273,8 @@ export const extraQuestions=[
     "topic": "商務",
     "audio": "Which supplier offers the shorter delivery time?\nA. Delivery is included.\nB. Easton can ship tomorrow.\nC. At the loading dock.",
     "translation": "哪家供應商的交期較短？",
-    "stimulus": "Which supplier offers the shorter delivery time?"
+    "stimulus": "Which supplier offers the shorter delivery time?",
+    "audioSrc": "audio-p2-009.mp3"
   },
   {
     "id": "P2-010",
@@ -276,7 +291,8 @@ export const extraQuestions=[
     "topic": "商務",
     "audio": "How did you resolve the alarm?\nA. At the end of the shift.\nB. A very loud sound.\nC. By recalibrating the sensor.",
     "translation": "你怎麼解決警報的？",
-    "stimulus": "How did you resolve the alarm?"
+    "stimulus": "How did you resolve the alarm?",
+    "audioSrc": "audio-p2-010.mp3"
   },
   {
     "id": "P2-011",
@@ -293,7 +309,8 @@ export const extraQuestions=[
     "topic": "商務",
     "audio": "Isn't the training session on Friday?\nA. It was moved to Monday.\nB. About ten participants.\nC. In the training manual.",
     "translation": "訓練課程不是星期五嗎？",
-    "stimulus": "Isn't the training session on Friday?"
+    "stimulus": "Isn't the training session on Friday?",
+    "audioSrc": "audio-p2-011.mp3"
   },
   {
     "id": "P2-012",
@@ -310,7 +327,8 @@ export const extraQuestions=[
     "topic": "商務",
     "audio": "Should we repair the unit or replace it?\nA. It weighs ten kilograms.\nB. Let's compare the costs first.\nC. The office is on the right.",
     "translation": "這個機組應該修理還是更換？",
-    "stimulus": "Should we repair the unit or replace it?"
+    "stimulus": "Should we repair the unit or replace it?",
+    "audioSrc": "audio-p2-012.mp3"
   },
   {
     "id": "P3-001",
@@ -330,7 +348,8 @@ export const extraQuestions=[
     "audio": "Woman: The replacement filter arrived this morning. Can you install it today?\nMan: I can, but the machine must be shut down first.\nWoman: Production finishes at four.\nMan: Then I will start at four thirty. Please ask the operator to prepare the maintenance log.",
     "passage": null,
     "translation": "女：替換濾芯今天早上到了，今天能安裝嗎？\n男：可以，但機台必須先停機。\n女：生產四點結束。\n男：那我四點半開始，請操作員準備保養紀錄。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p3-g1.mp3"
   },
   {
     "id": "P3-002",
@@ -350,7 +369,8 @@ export const extraQuestions=[
     "audio": "Woman: The replacement filter arrived this morning. Can you install it today?\nMan: I can, but the machine must be shut down first.\nWoman: Production finishes at four.\nMan: Then I will start at four thirty. Please ask the operator to prepare the maintenance log.",
     "passage": null,
     "translation": "女：替換濾芯今天早上到了，今天能安裝嗎？\n男：可以，但機台必須先停機。\n女：生產四點結束。\n男：那我四點半開始，請操作員準備保養紀錄。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p3-g1.mp3"
   },
   {
     "id": "P3-003",
@@ -370,7 +390,8 @@ export const extraQuestions=[
     "audio": "Woman: The replacement filter arrived this morning. Can you install it today?\nMan: I can, but the machine must be shut down first.\nWoman: Production finishes at four.\nMan: Then I will start at four thirty. Please ask the operator to prepare the maintenance log.",
     "passage": null,
     "translation": "女：替換濾芯今天早上到了，今天能安裝嗎？\n男：可以，但機台必須先停機。\n女：生產四點結束。\n男：那我四點半開始，請操作員準備保養紀錄。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p3-g1.mp3"
   },
   {
     "id": "P3-004",
@@ -390,7 +411,8 @@ export const extraQuestions=[
     "audio": "Man: I need a room for twelve people next Tuesday morning.\nWoman: The Harbor Room is available, but it seats only eight. The Garden Room seats sixteen.\nMan: Does the Garden Room have a projector?\nWoman: Yes, and I can reserve it from nine until noon.\nMan: Great. Please book that one.",
     "passage": null,
     "translation": "男：下週二早上需要十二人的會議室。\n女：Harbor 空著，但只容納八人；Garden 可容納十六人。\n男：Garden 有投影機嗎？\n女：有，可訂九點到中午。\n男：請訂那間。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p3-g2.mp3"
   },
   {
     "id": "P3-005",
@@ -410,7 +432,8 @@ export const extraQuestions=[
     "audio": "Man: I need a room for twelve people next Tuesday morning.\nWoman: The Harbor Room is available, but it seats only eight. The Garden Room seats sixteen.\nMan: Does the Garden Room have a projector?\nWoman: Yes, and I can reserve it from nine until noon.\nMan: Great. Please book that one.",
     "passage": null,
     "translation": "男：下週二早上需要十二人的會議室。\n女：Harbor 空著，但只容納八人；Garden 可容納十六人。\n男：Garden 有投影機嗎？\n女：有，可訂九點到中午。\n男：請訂那間。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p3-g2.mp3"
   },
   {
     "id": "P3-006",
@@ -430,7 +453,8 @@ export const extraQuestions=[
     "audio": "Man: I need a room for twelve people next Tuesday morning.\nWoman: The Harbor Room is available, but it seats only eight. The Garden Room seats sixteen.\nMan: Does the Garden Room have a projector?\nWoman: Yes, and I can reserve it from nine until noon.\nMan: Great. Please book that one.",
     "passage": null,
     "translation": "男：下週二早上需要十二人的會議室。\n女：Harbor 空著，但只容納八人；Garden 可容納十六人。\n男：Garden 有投影機嗎？\n女：有，可訂九點到中午。\n男：請訂那間。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p3-g2.mp3"
   },
   {
     "id": "P3-007",
@@ -450,7 +474,8 @@ export const extraQuestions=[
     "audio": "Woman: Your order of fifty safety helmets is ready, but our driver is unavailable today.\nMan: We need them for the inspection tomorrow. Can we collect them?\nWoman: Certainly. Our warehouse closes at six.\nMan: I will send a colleague at five. Please have the invoice ready.",
     "passage": null,
     "translation": "女：五十頂安全帽已備妥，但司機今天無法送貨。\n男：明天檢查要用，我們能自取嗎？\n女：可以，倉庫六點關。\n男：同事五點去，請備妥發票。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p3-g3.mp3"
   },
   {
     "id": "P3-008",
@@ -470,7 +495,8 @@ export const extraQuestions=[
     "audio": "Woman: Your order of fifty safety helmets is ready, but our driver is unavailable today.\nMan: We need them for the inspection tomorrow. Can we collect them?\nWoman: Certainly. Our warehouse closes at six.\nMan: I will send a colleague at five. Please have the invoice ready.",
     "passage": null,
     "translation": "女：五十頂安全帽已備妥，但司機今天無法送貨。\n男：明天檢查要用，我們能自取嗎？\n女：可以，倉庫六點關。\n男：同事五點去，請備妥發票。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p3-g3.mp3"
   },
   {
     "id": "P3-009",
@@ -490,7 +516,8 @@ export const extraQuestions=[
     "audio": "Woman: Your order of fifty safety helmets is ready, but our driver is unavailable today.\nMan: We need them for the inspection tomorrow. Can we collect them?\nWoman: Certainly. Our warehouse closes at six.\nMan: I will send a colleague at five. Please have the invoice ready.",
     "passage": null,
     "translation": "女：五十頂安全帽已備妥，但司機今天無法送貨。\n男：明天檢查要用，我們能自取嗎？\n女：可以，倉庫六點關。\n男：同事五點去，請備妥發票。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p3-g3.mp3"
   },
   {
     "id": "P3-010",
@@ -510,7 +537,8 @@ export const extraQuestions=[
     "audio": "Woman: The pressure rose again after we isolated the chamber.\nMan: Did you check the door seal?\nWoman: Yes. It looks clean, but we have not performed a leak test yet.\nMan: Let us follow the service manual and test it before replacing any parts.\nWoman: Agreed. I will get the manual.",
     "passage": null,
     "translation": "女：隔離腔體後壓力又升高。\n男：檢查門的密封件了嗎？\n女：看起來乾淨，但還沒做洩漏測試。\n男：先依維修手冊測試，再決定是否換零件。\n女：我去拿手冊。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p3-g4.mp3"
   },
   {
     "id": "P3-011",
@@ -530,7 +558,8 @@ export const extraQuestions=[
     "audio": "Woman: The pressure rose again after we isolated the chamber.\nMan: Did you check the door seal?\nWoman: Yes. It looks clean, but we have not performed a leak test yet.\nMan: Let us follow the service manual and test it before replacing any parts.\nWoman: Agreed. I will get the manual.",
     "passage": null,
     "translation": "女：隔離腔體後壓力又升高。\n男：檢查門的密封件了嗎？\n女：看起來乾淨，但還沒做洩漏測試。\n男：先依維修手冊測試，再決定是否換零件。\n女：我去拿手冊。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p3-g4.mp3"
   },
   {
     "id": "P3-012",
@@ -550,7 +579,8 @@ export const extraQuestions=[
     "audio": "Woman: The pressure rose again after we isolated the chamber.\nMan: Did you check the door seal?\nWoman: Yes. It looks clean, but we have not performed a leak test yet.\nMan: Let us follow the service manual and test it before replacing any parts.\nWoman: Agreed. I will get the manual.",
     "passage": null,
     "translation": "女：隔離腔體後壓力又升高。\n男：檢查門的密封件了嗎？\n女：看起來乾淨，但還沒做洩漏測試。\n男：先依維修手冊測試，再決定是否換零件。\n女：我去拿手冊。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p3-g4.mp3"
   },
   {
     "id": "P4-001",
@@ -570,7 +600,8 @@ export const extraQuestions=[
     "audio": "Attention, visitors. The ten oclock factory tour will begin at the reception desk. Please arrive ten minutes early to collect your visitor badge. Photography is not permitted in the production area. Safety glasses will be provided at the entrance.",
     "passage": null,
     "translation": "各位訪客，十點的工廠導覽從接待櫃檯開始。請提早十分鐘領訪客證。生產區禁止拍照，入口提供護目鏡。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p4-g1.mp3"
   },
   {
     "id": "P4-002",
@@ -590,7 +621,8 @@ export const extraQuestions=[
     "audio": "Attention, visitors. The ten oclock factory tour will begin at the reception desk. Please arrive ten minutes early to collect your visitor badge. Photography is not permitted in the production area. Safety glasses will be provided at the entrance.",
     "passage": null,
     "translation": "各位訪客，十點的工廠導覽從接待櫃檯開始。請提早十分鐘領訪客證。生產區禁止拍照，入口提供護目鏡。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p4-g1.mp3"
   },
   {
     "id": "P4-003",
@@ -610,7 +642,8 @@ export const extraQuestions=[
     "audio": "Attention, visitors. The ten oclock factory tour will begin at the reception desk. Please arrive ten minutes early to collect your visitor badge. Photography is not permitted in the production area. Safety glasses will be provided at the entrance.",
     "passage": null,
     "translation": "各位訪客，十點的工廠導覽從接待櫃檯開始。請提早十分鐘領訪客證。生產區禁止拍照，入口提供護目鏡。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p4-g1.mp3"
   },
   {
     "id": "P4-004",
@@ -630,7 +663,8 @@ export const extraQuestions=[
     "audio": "Hello, Mr. Chen. This is Alice from Northside Service. Your repaired motor has passed our final test and is ready for collection. We close at five today. If you prefer delivery, please call us before three. The repair is covered by your warranty, so there is no service charge.",
     "passage": null,
     "translation": "陳先生您好，我是 Northside Service 的 Alice。修好的馬達已通過最終測試，可取件；今天五點關門。如需配送請三點前致電。維修在保固內，不收服務費。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p4-g2.mp3"
   },
   {
     "id": "P4-005",
@@ -650,7 +684,8 @@ export const extraQuestions=[
     "audio": "Hello, Mr. Chen. This is Alice from Northside Service. Your repaired motor has passed our final test and is ready for collection. We close at five today. If you prefer delivery, please call us before three. The repair is covered by your warranty, so there is no service charge.",
     "passage": null,
     "translation": "陳先生您好，我是 Northside Service 的 Alice。修好的馬達已通過最終測試，可取件；今天五點關門。如需配送請三點前致電。維修在保固內，不收服務費。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p4-g2.mp3"
   },
   {
     "id": "P4-006",
@@ -670,7 +705,8 @@ export const extraQuestions=[
     "audio": "Hello, Mr. Chen. This is Alice from Northside Service. Your repaired motor has passed our final test and is ready for collection. We close at five today. If you prefer delivery, please call us before three. The repair is covered by your warranty, so there is no service charge.",
     "passage": null,
     "translation": "陳先生您好，我是 Northside Service 的 Alice。修好的馬達已通過最終測試，可取件；今天五點關門。如需配送請三點前致電。維修在保固內，不收服務費。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p4-g2.mp3"
   },
   {
     "id": "P4-007",
@@ -690,7 +726,8 @@ export const extraQuestions=[
     "audio": "Good morning, team. Our software training has moved from Room Two to the computer lab on the third floor. The session still starts at nine thirty. Bring your laptop and company identification. After the session, you will receive a link to the training materials by email.",
     "passage": null,
     "translation": "各位早安，軟體訓練從二號教室改到三樓電腦教室，仍於九點半開始。請帶筆電與員工證，課後會寄教材連結。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p4-g3.mp3"
   },
   {
     "id": "P4-008",
@@ -710,7 +747,8 @@ export const extraQuestions=[
     "audio": "Good morning, team. Our software training has moved from Room Two to the computer lab on the third floor. The session still starts at nine thirty. Bring your laptop and company identification. After the session, you will receive a link to the training materials by email.",
     "passage": null,
     "translation": "各位早安，軟體訓練從二號教室改到三樓電腦教室，仍於九點半開始。請帶筆電與員工證，課後會寄教材連結。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p4-g3.mp3"
   },
   {
     "id": "P4-009",
@@ -730,7 +768,8 @@ export const extraQuestions=[
     "audio": "Good morning, team. Our software training has moved from Room Two to the computer lab on the third floor. The session still starts at nine thirty. Bring your laptop and company identification. After the session, you will receive a link to the training materials by email.",
     "passage": null,
     "translation": "各位早安，軟體訓練從二號教室改到三樓電腦教室，仍於九點半開始。請帶筆電與員工證，課後會寄教材連結。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p4-g3.mp3"
   },
   {
     "id": "P4-010",
@@ -750,7 +789,8 @@ export const extraQuestions=[
     "audio": "Thank you for calling Central Logistics. Deliveries to the southern region are delayed by one day because of severe weather. Our tracking website will show revised arrival times by six this evening. If your shipment contains temperature sensitive materials, press two to speak with a specialist.",
     "passage": null,
     "translation": "感謝致電 Central Logistics。因天候惡劣，南部配送延後一天。今晚六點前追蹤網站會更新到貨時間；若貨物需溫控，請按二聯繫專員。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p4-g4.mp3"
   },
   {
     "id": "P4-011",
@@ -770,7 +810,8 @@ export const extraQuestions=[
     "audio": "Thank you for calling Central Logistics. Deliveries to the southern region are delayed by one day because of severe weather. Our tracking website will show revised arrival times by six this evening. If your shipment contains temperature sensitive materials, press two to speak with a specialist.",
     "passage": null,
     "translation": "感謝致電 Central Logistics。因天候惡劣，南部配送延後一天。今晚六點前追蹤網站會更新到貨時間；若貨物需溫控，請按二聯繫專員。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p4-g4.mp3"
   },
   {
     "id": "P4-012",
@@ -790,7 +831,8 @@ export const extraQuestions=[
     "audio": "Thank you for calling Central Logistics. Deliveries to the southern region are delayed by one day because of severe weather. Our tracking website will show revised arrival times by six this evening. If your shipment contains temperature sensitive materials, press two to speak with a specialist.",
     "passage": null,
     "translation": "感謝致電 Central Logistics。因天候惡劣，南部配送延後一天。今晚六點前追蹤網站會更新到貨時間；若貨物需溫控，請按二聯繫專員。",
-    "documents": null
+    "documents": null,
+    "audioSrc": "audio-p4-g4.mp3"
   },
   {
     "id": "P6-001",
