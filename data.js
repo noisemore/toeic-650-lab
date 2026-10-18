@@ -2,6 +2,7 @@ import {expandedWords,expandedEngineering} from './vocabulary.js';
 export const words=expandedWords;
 export const engineering=expandedEngineering;
 import {extraQuestions} from './parts.js';
+import {expansionQuestions} from './question-bank.js';
 // 原創 Part 5 題庫；其餘六個 Part 由 parts.js 提供。
 const raw=[
 ['The technician _____ the equipment before starting the maintenance procedure yesterday.','inspect','inspected','inspecting','inspection','B','yesterday 表示過去時間，主動詞須使用過去式 inspected。','過去式','設備'],
@@ -42,4 +43,4 @@ const raw=[
 ['The client asked whether the replacement part was _____ stock.','in','on','by','to','A','in stock 表示有庫存。','固定搭配','採購'],
 ];
 const p5Questions=raw.map((r,i)=>({id:`P5-${String(i+1).padStart(3,'0')}`,part:5,question:r[0],options:r.slice(1,5),answer:'ABCD'.indexOf(r[5]),explanation:r[6],grammar:r[7],topic:r[8]}));
-export const questions=[...extraQuestions.filter(q=>q.part<5),...p5Questions,...extraQuestions.filter(q=>q.part>5)];
+export const questions=[...extraQuestions.filter(q=>q.part<5),...p5Questions,...extraQuestions.filter(q=>q.part>5),...expansionQuestions].sort((a,b)=>a.part-b.part);
