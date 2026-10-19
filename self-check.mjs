@@ -3,6 +3,7 @@ import vm from 'node:vm';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {questions,words,engineering} from './data.js';
+import {dailyDate,dailyGoal,ensureDailyPlan,dailyProgress,dailyQuestionOrder} from './daily.js';
 import {sceneSvg} from './scenes.js';
 import {lexiconPage,filterLexicon,LEXICON_SOURCES} from './lexicon.js';
 const root=new URL('./',import.meta.url),read=f=>fs.readFileSync(new URL(f,root),'utf8');
@@ -80,13 +81,36 @@ console.log('PASS: 3,000 unique words, 400 original collocations, 400 engineerin
 const manifest=JSON.parse(read('manifest.webmanifest'));assert.equal(manifest.scope,'./');assert.equal(manifest.display,'standalone');
 for(const icon of manifest.icons){const bytes=fs.readFileSync(new URL(icon.src,root));const size=Number(icon.sizes.split('x')[0]);assert.equal(bytes.readUInt32BE(16),size);assert.equal(bytes.readUInt32BE(20),size)}
 console.log('PASS: 1,024 unique questions, all seven parts, answer ranges, 147 consistent groups, single/double/triple readings, expanded vocabulary and PWA icons.');
+// Persisted random daily tasks: local dates, exact counts, no duplicated completion, safe legacy imports.
+assert.equal(dailyDate(new Date(2026,0,2,0,1)), '2026-01-02');
+assert.equal(words.filter(w=>w.example&&w.exampleZh).length,400);
+const seeded=seed=>()=>{seed=(1664525*seed+1013904223)>>>0;return seed/4294967296};
+const taskData={history:[],reviews:{},settings:{dailyGoal:10,dailyWordGoal:5}};
+const firstPlan=ensureDailyPlan(taskData,questions,words,'2026-10-19',seeded(123));assert(firstPlan.changed);
+assert.equal(new Set(firstPlan.plan.questionOrder).size,1024);assert.equal(new Set(firstPlan.plan.wordOrder).size,400);
+assert.notDeepEqual(firstPlan.plan.questionOrder,questions.map(q=>q.id));
+const repeatPlan=ensureDailyPlan(taskData,questions,words,'2026-10-19',()=>{throw Error('Must not redraw on same day')});assert(!repeatPlan.changed);assert.equal(repeatPlan.plan,firstPlan.plan);
+for(const [id,items] of groups){const positions=items.map(q=>firstPlan.plan.questionOrder.indexOf(q.id));for(let n=1;n<positions.length;n++)assert.equal(positions[n],positions[n-1]+1,id+' daily group order')}
+let progress=dailyProgress(taskData,firstPlan.plan);assert.equal(progress.questionIds.length,10);assert.equal(progress.wordIds.length,5);assert.equal(progress.completed,0);
+const initialIds=[...progress.questionIds],initialWords=[...progress.wordIds];
+taskData.history.push({id:initialIds[0],date:'2026-10-18'},{id:initialIds[1],date:'2026-10-19'},{id:initialIds[1],date:'2026-10-19'});
+progress=dailyProgress(taskData,firstPlan.plan);assert.equal(progress.completed,1);assert.equal(progress.remaining.length,9);assert(!progress.remaining.includes(initialIds[1]));
+taskData.settings.dailyGoal=15;taskData.settings.dailyWordGoal=8;progress=dailyProgress(taskData,firstPlan.plan);assert.deepEqual(progress.questionIds.slice(0,10),initialIds);assert.deepEqual(progress.wordIds.slice(0,5),initialWords);assert.equal(progress.completed,1);
+firstPlan.plan.learnedWordIds=[initialWords[0]];assert.equal(dailyProgress(taskData,firstPlan.plan).wordsCompleted,1);
+const restored=JSON.parse(JSON.stringify(taskData));assert(!ensureDailyPlan(restored,questions,words,'2026-10-19').changed);assert.deepEqual(dailyProgress(restored,restored.daily),progress={...dailyProgress(taskData,taskData.daily)});
+for(const goal of [1,2,3,9,10,99,100]){taskData.settings.dailyGoal=goal;assert.equal(dailyProgress(taskData,firstPlan.plan).questionIds.length,goal)}
+taskData.settings.dailyGoal=0;taskData.settings.dailyWordGoal=21;assert.equal(dailyProgress(taskData,firstPlan.plan).goal,10);assert.equal(dailyProgress(taskData,firstPlan.plan).wordGoal,5);
+const nextDay=ensureDailyPlan(taskData,questions,words,'2026-10-20',seeded(987));assert(nextDay.changed);assert.notDeepEqual(nextDay.plan.questionOrder,initialIds);assert.notDeepEqual(nextDay.plan.wordOrder.slice(0,5),initialWords);assert.equal(nextDay.plan.learnedWordIds.length,0);assert.equal(dailyProgress(taskData,nextDay.plan).completed,0);
+const corrupt={settings:{},history:[],daily:{date:'2026-10-19',questionOrder:['missing'],wordOrder:['missing']}};assert(ensureDailyPlan(corrupt,questions,words,'2026-10-19').changed);
+const invalidLearned={settings:{},history:[],daily:JSON.parse(JSON.stringify(firstPlan.plan))};invalidLearned.daily.learnedWordIds=[initialWords[0],initialWords[0],'missing'];ensureDailyPlan(invalidLearned,questions,words,'2026-10-19');assert.deepEqual(invalidLearned.daily.learnedWordIds,[initialWords[0]]);
+console.log('PASS: daily random sampling from all questions and 400 example-rich words, local-day rollover, same-day persistence, exact goals, resize prefixes, resume, unique daily progress, group order and malformed backup repair.');
 // Render the real app functions with a small DOM/storage harness (no browser/audio engine).
 let html='',speech=[],listeners={},status={textContent:''};
 const element={get innerHTML(){return html},set innerHTML(value){html=value}};
 const document={getElementById:id=>id==='app'?element:status,addEventListener:(name,f)=>listeners[name]=f,querySelector:()=>null,createElement:()=>({className:'',textContent:'',remove(){}}),body:{append(){}}};
 const window={scrollTo(){},addEventListener(){},speechSynthesis:null};
 const speechSynthesis={cancel(){},getVoices:()=>[{lang:'en-US'}],speak(u){speech.push(u)}};window.speechSynthesis=speechSynthesis;
-const context=vm.createContext({document,window,navigator:{},speechSynthesis,SpeechSynthesisUtterance:class{constructor(text){this.text=text}},questions,words,engineering,sceneSvg,lexiconPage,LEXICON_SOURCES,console,setTimeout:()=>0,clearTimeout(){},Date,Blob,URL,confirm:()=>true});
+const context=vm.createContext({document,window,navigator:{},speechSynthesis,SpeechSynthesisUtterance:class{constructor(text){this.text=text}},questions,words,engineering,dailyDate,dailyGoal,ensureDailyPlan,dailyProgress,sceneSvg,lexiconPage,LEXICON_SOURCES,console,setTimeout:()=>0,clearTimeout(){},Date,Blob,URL,confirm:()=>true});
 const app=read('app.js').replace(/^import .*;\n/gm,'').replace(/\ninit\(\);\s*$/,'');vm.runInContext(app,context);
 const run=s=>vm.runInContext(s,context);
 for(let i=0;i<questions.length;i++){
@@ -116,12 +140,34 @@ assert.equal(run('practiceIds().join()'),'P5-001');
 run("data.history.push({id:'P5-001',correct:true,date:'2026-10-19'});stats()");assert.equal(run('practiceIds().length'),0);
 run("mode='saved'");assert.equal(run('practiceIds().join()'),'P5-001');assert(html.includes('各 Part 進度'));
 run('index=0;playListening()');assert(speech[0].text.includes('A.'));speech[0].onend();assert.equal(speech.length,2);run('stopAudio()');speech[1].onend();assert.equal(speech.length,2);
-run('home()');assert(!html.includes('尚未開發'));
+run("data=defaultData();home()");assert(!html.includes('尚未開發'));assert(html.includes('daily-goals-form'));assert(html.includes('data-action="daily-start"'));assert.equal((html.match(/data-daily-word-id=/g)||[]).length,5);assert(html.includes('例句｜Example'));
+run("mode='wrong';partFilter='5';practiceSearch='nonexistent';const todayPlan=currentDaily();quizQueue=currentDailyProgress().remaining;dailyQuizDate=today();index=questions.findIndex(q=>q.id===quizQueue[0]);selected=null;reveal=false;quiz()");assert(html.includes('← 今日任務'));assert.equal(run('quizQueue.length'),10);run("dailyQuizDate=null;mode='all';partFilter='all';practiceSearch=''");
 run("lexicon('words')");assert.equal((html.match(/data-word-id=/g)||[]).length,30);assert(!html.includes('undefined'));
 run("lexStates.engineering.search='MFC';lexicon('engineering')");assert(html.includes('mass flow controller'));
 run("lexStates.engineering.search='zzzz-no-result';lexicon('engineering')");assert(html.includes('沒有符合的詞彙'));
 run("data.reviews={'W-1':{at:'2026-10-18'}};lexStates.words.status='studied';lexicon('words')");assert(html.includes('maintenance'));assert.equal((html.match(/data-word-id=/g)||[]).length,1);
 console.log('PASS: all 1,024 quiz screens, hidden listening answers, correct-answer feedback, part filtering, v1 history/bookmarks compatibility, audio stop cancellation.');
+// Exercise actual daily buttons, saves, quiz submissions and completion routing.
+let persistedDailyData;
+context.testDB={transaction(){return {objectStore(){return {put(value){persistedDailyData=JSON.parse(JSON.stringify(value));const request={};queueMicrotask(()=>request.onsuccess?.());return request}}}}}};
+run("db=testDB;data=defaultData();data.settings.dailyGoal=2;data.settings.dailyWordGoal=1;page='home';home()");
+const dailyInitial=JSON.parse(run('JSON.stringify(currentDailyProgress().questionIds)'));
+await run('startDaily()');assert.equal(run('dailyQuizDate'),run('today()'));assert.equal(run('page'),'quiz');assert.equal(run('quizQueue.length'),2);assert.equal(run('questions[index].id'),dailyInitial[0]);
+await run('selected=questions[index].answer;submit()');assert.equal(run('currentDailyProgress().completed'),1);assert.equal(persistedDailyData.history.length,1);
+await listeners.click({target:{closest:()=>({dataset:{nav:'home'}})}});
+await run('startDaily()');assert.equal(run('quizQueue.length'),1);assert.equal(run('questions[index].id'),dailyInitial[1]);
+await run('selected=questions[index].answer;submit()');await listeners.click({target:{closest:()=>({dataset:{action:'next'}})}});assert.equal(run('page'),'home');assert.equal(run('currentDailyProgress().completed'),2);assert(html.includes('再練今日題目'));
+await run('startDaily()');assert.equal(run('quizQueue.length'),2);await run('selected=questions[index].answer;submit()');assert.equal(run('currentDailyProgress().completed'),2,'repeat does not inflate progress');
+run("page='home';home()");const featured=run('currentDailyProgress().wordIds[0]');
+await listeners.click({target:{closest:()=>({dataset:{dailyWord:featured}})}});assert.equal(run('currentDailyProgress().wordsCompleted'),1);assert(persistedDailyData.reviews[featured]);
+context.savedDaily=JSON.parse(JSON.stringify(persistedDailyData));run('data=savedDaily;home()');assert.equal(run('currentDailyProgress().wordsCompleted'),1);assert(html.includes('✓ 今日已學'));
+const oldOrder=run('JSON.stringify(data.daily.questionOrder)');const oldGet=document.getElementById;
+document.getElementById=id=>id==='daily-goal'?{value:'4'}:id==='daily-word-goal'?{value:'3'}:oldGet(id);
+await listeners.submit({target:{id:'daily-goals-form'},preventDefault(){}});assert.equal(run('currentDailyProgress().goal'),4);assert.equal(run('currentDailyProgress().wordGoal'),3);assert.equal(run('JSON.stringify(data.daily.questionOrder)'),oldOrder);assert.equal(persistedDailyData.settings.dailyGoal,4);
+document.getElementById=id=>id==='daily-goal'?{value:'0'}:id==='daily-word-goal'?{value:'30'}:oldGet(id);
+await listeners.submit({target:{id:'daily-goals-form'},preventDefault(){}});assert.equal(run('data.settings.dailyGoal'),4);assert.equal(run('data.settings.dailyWordGoal'),3);document.getElementById=oldGet;
+run("dailyQuizDate='2000-01-01';page='quiz'");await listeners.click({target:{closest:()=>({dataset:{action:'next'}})}});assert.equal(run('page'),'home');assert.equal(run('dailyQuizDate'),null);
+console.log('PASS: real daily start/resume/replay buttons, quiz-save persistence, completion returns home, learned-word persistence, goal form validation and midnight-session exit.');
 // Exercise the actual service worker offline, with a previous-version cache and an unrelated app cache.
 const base='https://noisemore.github.io/toeic-650-lab/',normalize=x=>new URL(typeof x==='string'?x:x.url,base).href;
 const stores=new Map([['toeic-650-lab-v1.0.1',new Map()],['unrelated-app',new Map()]]),events={};let offline=false;
@@ -129,8 +175,8 @@ const caches={async keys(){return [...stores.keys()]},async delete(k){return sto
 vm.runInNewContext(read('sw.js'),{caches,URL,Request:class{constructor(url,options){this.url=String(url);this.cache=options.cache}},location:{origin:'https://noisemore.github.io'},fetch:async()=>{if(offline)throw Error('offline');return {ok:true}},self:{registration:{scope:base},clients:{claim(){}},skipWaiting(){},addEventListener(n,f){events[n]=f}}});
 let pending;events.install({waitUntil(p){pending=p}});await pending;events.activate({waitUntil(p){pending=p}});await pending;
 assert(!stores.has('toeic-650-lab-v1.0.1'));assert(stores.has('unrelated-app'));offline=true;
-for(const url of stores.get('toeic-650-lab-v4.0.0').keys()){let result;events.fetch({request:{url,method:'GET'},respondWith(p){result=p}});assert(await result,url)}
+for(const url of stores.get('toeic-650-lab-v4.1.0').keys()){let result;events.fetch({request:{url,method:'GET'},respondWith(p){result=p}});assert(await result,url)}
 let fallback;events.fetch({request:{url:base+'?source=home',method:'GET',mode:'navigate'},respondWith(p){fallback=p}});assert.equal((await fallback).body,'index.html');
 let intercepted=false;events.fetch({request:{url:'https://noisemore.github.io/another-app/',method:'GET'},respondWith(){intercepted=true}});assert(!intercepted);
-console.log('PASS: 245 fresh-network precached resources offline, navigation fallback, scoped requests, prior-version cache cleanup and unrelated cache preservation.');
+console.log('PASS: 246 fresh-network precached resources offline, navigation fallback, scoped requests, prior-version cache cleanup and unrelated cache preservation.');
 console.log('NOT COVERED: Android install/flight mode and audible speech output require a real device; live browser smoke test is separate.');
