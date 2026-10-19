@@ -1,3 +1,4 @@
+import {openQuestions} from './open-bank.js';
 import {readingQuestions} from './reading-bank.js';
 import {expandedWords,expandedEngineering} from './vocabulary.js';
 export const words=expandedWords;
@@ -44,4 +45,4 @@ const raw=[
 ['The client asked whether the replacement part was _____ stock.','in','on','by','to','A','in stock 表示有庫存。','固定搭配','採購'],
 ];
 const p5Questions=raw.map((r,i)=>({id:`P5-${String(i+1).padStart(3,'0')}`,part:5,question:r[0],options:r.slice(1,5),answer:'ABCD'.indexOf(r[5]),explanation:r[6],grammar:r[7],topic:r[8]}));
-export const questions=[...extraQuestions.filter(q=>q.part<5),...p5Questions,...extraQuestions.filter(q=>q.part>5),...expansionQuestions,...readingQuestions].sort((a,b)=>a.part-b.part);
+export const questions=[...extraQuestions.filter(q=>q.part<5),...p5Questions,...extraQuestions.filter(q=>q.part>5),...expansionQuestions,...readingQuestions,...openQuestions].sort((a,b)=>a.part-b.part);

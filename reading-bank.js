@@ -2068,13 +2068,13 @@ export const readingQuestions=[
     "part": 7,
     "question": "Which part of the original food order did not change?",
     "options": [
-      "The number of standard lunches",
+      "The total cost of boxed lunches",
       "The number of fruit trays",
       "The number of vegetarian lunches",
       "The total number of boxed lunches"
     ],
     "answer": 1,
-    "explanation": "最後確認信說 four fruit trays remain unchanged；餐盒總數與素食數均改變。",
+    "explanation": "最後確認信說 four fruit trays remain unchanged；餐盒總數、素食數與餐盒總價均改變。",
     "grammar": "跨文件對照",
     "topic": "團體餐飲訂單",
     "group": "P7-XR11",

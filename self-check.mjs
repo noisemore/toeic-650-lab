@@ -5,12 +5,13 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {questions,words,engineering} from './data.js';
 import {dailyDate,dailyGoal,ensureDailyPlan,dailyProgress,dailyQuestionOrder} from './daily.js';
+import {officialSources,levelFor,levelLabels} from './practice-sources.js';
 import {sceneSvg} from './scenes.js';
 import {lexiconPage,filterLexicon,LEXICON_SOURCES} from './lexicon.js';
 const root=new URL('./',import.meta.url),read=f=>fs.readFileSync(new URL(f,root),'utf8');
-assert.equal(questions.length,1124);assert.equal(words.length,3000);assert.equal(engineering.length,400);
-assert.equal(new Set([...questions,...words,...engineering].map(q=>q.id)).size,4524);
-const counts=[30,132,102,102,336,152,270];
+assert.equal(questions.length,1172);assert.equal(words.length,3000);assert.equal(engineering.length,400);
+assert.equal(new Set([...questions,...words,...engineering].map(q=>q.id)).size,4572);
+const counts=[30,132,102,102,360,152,294];
 for(let p=1;p<=7;p++)assert.equal(questions.filter(q=>q.part===p).length,counts[p-1]);
 for(const q of questions){
   assert(q.question&&q.explanation.length>=8&&q.grammar&&q.topic,q.id);
@@ -24,18 +25,18 @@ for(const q of questions){
   if(q.part===7)assert(q.documents?.every(d=>d.title&&d.text),q.id);
 }
 const groups=Map.groupBy(questions.filter(q=>q.group),q=>q.group);
-for(const [id,items] of groups){assert.equal(items.length,items[0].part===6?4:items[0].part===7&&id.includes('-X')?5:3,id);assert.equal(new Set(items.map(q=>JSON.stringify([q.audio,q.passage,q.documents]))).size,1,id)}
+for(const [id,items] of groups){assert.equal(items.length,items[0].groupSize||(items[0].part===6?4:items[0].part===7&&id.includes('-X')?5:3),id);assert.equal(new Set(items.map(q=>JSON.stringify([q.audio,q.passage,q.documents]))).size,1,id)}
 assert.deepEqual([...new Set(questions.filter(q=>q.part===7).map(q=>q.documents.length))].sort(),[1,2,3]);
 // Freeze all original 120 records, not just their IDs, to preserve historical answer meanings.
 const oldQuestions=questions.filter(q=>!q.id.includes('-X'));
 assert.equal(oldQuestions.length,120);
 assert.equal(createHash('sha256').update(JSON.stringify(oldQuestions)).digest('hex'),'634e7a8f152245876c4955c3145c5650b0b1f4a3a0b6e04418b3c7203b291b32');
-assert.equal(groups.size,164);
+assert.equal(groups.size,170);
 const fingerprints=questions.map(q=>JSON.stringify([q.part,q.question,q.stimulus,q.audio,q.passage,q.documents,q.scene]));
 assert.equal(new Set(fingerprints).size,questions.length,'duplicate prompt and stimulus');
 assert.equal(new Set(questions.filter(q=>q.part===1).map(q=>q.scene)).size,30);
 assert.equal(new Set(questions.filter(q=>q.part<5).map(q=>q.audioSrc)).size,230);
-assert.equal(new Set(questions.filter(q=>q.part===5&&q.id.includes('-X')).map(q=>q.grammar)).size,40);
+assert.equal(new Set(questions.filter(q=>q.part===5&&q.id.includes('-X')&&q.sourceKind!=='open').map(q=>q.grammar)).size,40);
 for(const [id,items] of groups){
   assert.equal(new Set(items.map(q=>q.question)).size,items.length,id+' repeated question');
   if(items[0].part===6)for(let n=1;n<=4;n++)assert.equal(items[0].passage.split('['+n+']').length-1,1,id+' blank '+n);
@@ -81,14 +82,14 @@ assert(LEXICON_SOURCES.every(([name,url])=>name&&url.startsWith('https://')));
 console.log('PASS: 3,000 unique words, 400 original collocations, 400 engineering examples, 16 topics, preserved 40 legacy review IDs, bilingual/acronym searches and pagination.');
 const manifest=JSON.parse(read('manifest.webmanifest'));assert.equal(manifest.scope,'./');assert.equal(manifest.display,'standalone');
 for(const icon of manifest.icons){const bytes=fs.readFileSync(new URL(icon.src,root));const size=Number(icon.sizes.split('x')[0]);assert.equal(bytes.readUInt32BE(16),size);assert.equal(bytes.readUInt32BE(20),size)}
-console.log('PASS: 1,124 unique questions, all seven parts, answer ranges, 164 consistent groups, single/double/triple readings, expanded vocabulary and PWA icons.');
+console.log('PASS: 1,172 unique questions, all seven parts, answer ranges, 170 consistent groups, single/double/triple readings, expanded vocabulary and PWA icons.');
 // Persisted random daily tasks: local dates, exact counts, no duplicated completion, safe legacy imports.
 assert.equal(dailyDate(new Date(2026,0,2,0,1)), '2026-01-02');
 assert.equal(words.filter(w=>w.example&&w.exampleZh).length,400);
 const seeded=seed=>()=>{seed=(1664525*seed+1013904223)>>>0;return seed/4294967296};
 const taskData={history:[],reviews:{},settings:{dailyGoal:10,dailyWordGoal:5}};
 const firstPlan=ensureDailyPlan(taskData,questions,words,'2026-10-19',seeded(123));assert(firstPlan.changed);
-assert.equal(new Set(firstPlan.plan.questionOrder).size,1124);assert.equal(new Set(firstPlan.plan.wordOrder).size,400);
+assert.equal(new Set(firstPlan.plan.questionOrder).size,1172);assert.equal(new Set(firstPlan.plan.wordOrder).size,400);
 assert.notDeepEqual(firstPlan.plan.questionOrder,questions.map(q=>q.id));
 const repeatPlan=ensureDailyPlan(taskData,questions,words,'2026-10-19',()=>{throw Error('Must not redraw on same day')});assert(!repeatPlan.changed);assert.equal(repeatPlan.plan,firstPlan.plan);
 for(const [id,items] of groups){const positions=items.map(q=>firstPlan.plan.questionOrder.indexOf(q.id));for(let n=1;n<positions.length;n++)assert.equal(positions[n],positions[n-1]+1,id+' daily group order')}
@@ -111,7 +112,7 @@ const element={get innerHTML(){return html},set innerHTML(value){html=value}};
 const document={getElementById:id=>id==='app'?element:status,addEventListener:(name,f)=>listeners[name]=f,querySelector:()=>null,createElement:()=>({className:'',textContent:'',remove(){}}),body:{append(){}}};
 const window={scrollTo(){},addEventListener(){},speechSynthesis:null};
 const speechSynthesis={cancel(){},getVoices:()=>[{lang:'en-US'}],speak(u){speech.push(u)}};window.speechSynthesis=speechSynthesis;
-const context=vm.createContext({document,window,navigator:{},speechSynthesis,SpeechSynthesisUtterance:class{constructor(text){this.text=text}},questions,words,engineering,dailyDate,dailyGoal,ensureDailyPlan,dailyProgress,sceneSvg,audioMeta,ACCENTS,lexiconPage,LEXICON_SOURCES,console,setTimeout:()=>0,clearTimeout(){},Date,Blob,URL,confirm:()=>true});
+const context=vm.createContext({document,window,navigator:{},speechSynthesis,SpeechSynthesisUtterance:class{constructor(text){this.text=text}},questions,words,engineering,dailyDate,dailyGoal,ensureDailyPlan,dailyProgress,sceneSvg,officialSources,levelFor,levelLabels,audioMeta,ACCENTS,lexiconPage,LEXICON_SOURCES,console,setTimeout:()=>0,clearTimeout(){},Date,Blob,URL,confirm:()=>true});
 const app=read('app.js').replace(/^import .*;\n/gm,'').replace(/\ninit\(\);\s*$/,'');vm.runInContext(app,context);
 const run=s=>vm.runInContext(s,context);
 for(let i=0;i<questions.length;i++){
@@ -125,14 +126,14 @@ for(let i=0;i<questions.length;i++){
 for(let p=1;p<=7;p++){run(`partFilter='${p}';mode='all';practice()`);assert.equal(run('practiceIds().length'),counts[p-1])}
 // Large-bank pagination, safe searches, and random queues retain all group members in order.
 run("partFilter='all';mode='all';practicePage=0;practiceSearch='';practice()");
-assert.equal((html.match(/class="listbtn"/g)||[]).length,30);assert(html.includes('1 / 38'));
-const pageOne=html;run('practicePage=1;practice()');assert.notEqual(html,pageOne);assert(html.includes('2 / 38'));
-run("practiceSearch='P5-X';practicePage=0;practice()");assert.equal(run('practiceIds().length'),300);assert(html.includes('1 / 10'));
+assert.equal((html.match(/class="listbtn"/g)||[]).length,30);assert(html.includes('1 / 40'));
+const pageOne=html;run('practicePage=1;practice()');assert.notEqual(html,pageOne);assert(html.includes('2 / 40'));
+run("practiceSearch='P5-X';practicePage=0;practice()");assert.equal(run('practiceIds().length'),324);assert(html.includes('1 / 11'));
 run("practiceSearch='被動語態';practice()");assert(run('practiceIds().length')>=7);
 run("practiceSearch='no-such-question-zz';practice()");assert(html.includes('目前沒有符合條件'));
-run("practiceSearch='';practicePage=999;practice()");assert.equal(run('practicePage'),37);assert.equal((html.match(/class="listbtn"/g)||[]).length,14);
+run("practiceSearch='';practicePage=999;practice()");assert.equal(run('practicePage'),39);assert.equal((html.match(/class="listbtn"/g)||[]).length,2);
 run("practicePage=0;const shuffled=shuffledPracticeIds()");
-const shuffled=run('shuffled');assert.equal(shuffled.length,1124);assert.equal(new Set(shuffled).size,1124);
+const shuffled=run('shuffled');assert.equal(shuffled.length,1172);assert.equal(new Set(shuffled).size,1172);
 for(const [id,items] of groups){const positions=items.map(q=>shuffled.indexOf(q.id));for(let n=1;n<positions.length;n++)assert.equal(positions[n],positions[n-1]+1,id+' shuffled adjacency')}
 console.log('PASS: 30-question pagination, final page, ID/Chinese searches, empty results, grouped random queue with no omissions or duplicates.');
 // Old v1 history and bookmarks remain valid; wrong answers clear only after a correct retry.
@@ -147,7 +148,7 @@ run("lexicon('words')");assert.equal((html.match(/data-word-id=/g)||[]).length,3
 run("lexStates.engineering.search='MFC';lexicon('engineering')");assert(html.includes('mass flow controller'));
 run("lexStates.engineering.search='zzzz-no-result';lexicon('engineering')");assert(html.includes('沒有符合的詞彙'));
 run("data.reviews={'W-1':{at:'2026-10-18'}};lexStates.words.status='studied';lexicon('words')");assert(html.includes('maintenance'));assert.equal((html.match(/data-word-id=/g)||[]).length,1);
-console.log('PASS: all 1,124 quiz screens, hidden listening answers, correct-answer feedback, part filtering, v1 history/bookmarks compatibility, audio stop cancellation.');
+console.log('PASS: all 1,172 quiz screens, hidden listening answers, correct-answer feedback, part filtering, v1 history/bookmarks compatibility, audio stop cancellation.');
 // Exercise actual daily buttons, saves, quiz submissions and completion routing.
 let persistedDailyData;
 context.testDB={transaction(){return {objectStore(){return {put(value){persistedDailyData=JSON.parse(JSON.stringify(value));const request={};queueMicrotask(()=>request.onsuccess?.());return request}}}}}};
@@ -176,27 +177,27 @@ const caches={async keys(){return [...stores.keys()]},async delete(k){return sto
 vm.runInNewContext(read('sw.js'),{caches,URL,Request:class{constructor(url,options){this.url=String(url);this.cache=options.cache}},location:{origin:'https://noisemore.github.io'},fetch:async()=>{if(offline)throw Error('offline');return {ok:true}},self:{registration:{scope:base},clients:{claim(){}},skipWaiting(){},addEventListener(n,f){events[n]=f}}});
 let pending;events.install({waitUntil(p){pending=p}});await pending;events.activate({waitUntil(p){pending=p}});await pending;
 assert(!stores.has('toeic-650-lab-v1.0.1'));assert(stores.has('unrelated-app'));offline=true;
-for(const url of stores.get('toeic-650-lab-v4.3.0').keys()){let result;events.fetch({request:{url,method:'GET'},respondWith(p){result=p}});assert(await result,url)}
+for(const url of stores.get('toeic-650-lab-v4.4.0').keys()){let result;events.fetch({request:{url,method:'GET'},respondWith(p){result=p}});assert(await result,url)}
 let fallback;events.fetch({request:{url:base+'?source=home',method:'GET',mode:'navigate'},respondWith(p){fallback=p}});assert.equal((await fallback).body,'index.html');
 let intercepted=false;events.fetch({request:{url:'https://noisemore.github.io/another-app/',method:'GET'},respondWith(){intercepted=true}});assert(!intercepted);
-console.log('PASS: 280 fresh-network precached resources offline, navigation fallback, scoped requests, prior-version cache cleanup and unrelated cache preservation.');
+console.log('PASS: 283 fresh-network precached resources offline, navigation fallback, scoped requests, prior-version cache cleanup and unrelated cache preservation.');
 console.log('NOT COVERED: Android install/flight mode and audible speech output require a real device; live browser smoke test is separate.');
 
 const clips=JSON.parse(read("audio-metadata.json")).clips;assert.equal(Object.keys(clips).length,230);
 for(const q of questions.filter(q=>q.part<5)){const c=clips[q.audioSrc];assert(c&&c.duration>3,q.id);assert.equal(c.transcriptSha256,createHash("sha256").update(q.audio).digest("hex"),q.id);assert.deepEqual(c.accents,audioMeta[q.audioSrc].accents);if(q.part===3)assert.equal(c.speakers.length,2,q.id)}
 for(const country of ["US","GB","CA","AU"])assert(Object.values(clips).filter(c=>c.accents.includes(country)).length>=50);
-for(const q of questions.filter(q=>q.part===1)){const src=sceneSvg(q.scene).match(/src="\.\/(.*?)"/)[1];assert(fs.statSync(new URL(src,root)).size>10000);assert(stores.get("toeic-650-lab-v4.3.0").has(base+src))}
-assert.equal(stores.get("toeic-650-lab-v4.3.0").size,280);
-console.log("PASS: four regional accents, fixed dialogue voices, exact script hashes, all 30 photo assets cached and 280 resources.");
+for(const q of questions.filter(q=>q.part===1)){const src=sceneSvg(q.scene).match(/src="\.\/(.*?)"/)[1];assert(fs.statSync(new URL(src,root)).size>10000);assert(stores.get("toeic-650-lab-v4.4.0").has(base+src))}
+assert.equal(stores.get("toeic-650-lab-v4.4.0").size,283);
+console.log("PASS: four regional accents, fixed dialogue voices, exact script hashes, all 30 photo assets cached and 283 resources.");
 
 // Reading-only navigation, new-bank entry and back navigation use the real event handlers.
 run("data=defaultData();practiceSection='all';page='home';home()");
-assert(html.includes('閱讀測驗｜Reading'));assert(html.includes('758 題'));
+assert(html.includes('閱讀測驗｜Reading'));assert(html.includes('806 題'));
 await listeners.click({target:{closest:()=>({dataset:{action:'reading'}})}});
-assert.equal(run('practiceSection'),'reading');assert.equal(run('practiceIds().length'),758);
+assert.equal(run('practiceSection'),'reading');assert.equal(run('practiceIds().length'),806);
 assert(html.includes('閱讀測驗題庫'));assert(!html.includes('data-part="1"'));
 await listeners.click({target:{closest:()=>({dataset:{readingPart:'7'}})}});
-assert.equal(run('practiceIds().length'),270);
+assert.equal(run('practiceIds().length'),294);
 await listeners.click({target:{closest:()=>({dataset:{action:'reading-new'}})}});
 assert.equal(run('practiceIds().length'),100);assert(run('practiceIds().every(id=>id.includes("-XR"))'));
 const readingQueue=run('shuffledPracticeIds()');assert.equal(readingQueue.length,100);
@@ -209,16 +210,16 @@ run("startAt('P5-XR001');selected=questions[index].answer");await run('submit()'
 run("mode='wrong';practice()");assert(!run('practiceIds().includes("P5-XR001")'));
 await listeners.click({target:{closest:()=>({dataset:{section:'listening'}})}});
 run("mode='all';practiceSearch='';practice()");assert.equal(run('practiceIds().length'),366);
-await listeners.click({target:{closest:()=>({dataset:{action:'all-practice'}})}});assert.equal(run('practiceIds().length'),1124);
+await listeners.click({target:{closest:()=>({dataset:{action:'all-practice'}})}});assert.equal(run('practiceIds().length'),1172);
 
 // Same-day bank expansion preserves today's order, word choices and learned markers.
-const previousBank=questions.filter(q=>!q.id.includes('-XR')),migrating={settings:{dailyGoal:10,dailyWordGoal:5},history:[]};
+const previousBank=questions.filter(q=>!q.id.includes('-XR')&&!q.id.includes('-XO')),migrating={settings:{dailyGoal:10,dailyWordGoal:5},history:[]};
 const prior=ensureDailyPlan(migrating,previousBank,words,'2026-10-19',()=>.4).plan;
 prior.learnedWordIds=[prior.wordOrder[0]];const before=structuredClone(prior);
 assert(ensureDailyPlan(migrating,questions,words,'2026-10-19',()=>.6).changed);
 assert.deepEqual(migrating.daily.questionOrder.slice(0,1024),before.questionOrder);
 assert.deepEqual(migrating.daily.wordOrder,before.wordOrder);assert.deepEqual(migrating.daily.learnedWordIds,before.learnedWordIds);
-assert.equal(new Set(migrating.daily.questionOrder).size,1124);
+assert.equal(new Set(migrating.daily.questionOrder).size,1172);
 
 // Independently calculated answers for the new cross-document tasks.
 assert.equal(answerAt('P7-XR05',0),'About 10:35 a.m.');
@@ -230,7 +231,14 @@ assert.equal(answerAt('P7-XR10',0),'The 8:30 a.m. shuttle');assert.equal(answerA
 assert.equal(answerAt('P7-XR11',0),'Eighteen');assert.equal(answerAt('P7-XR11',1),'$438');assert.equal(answerAt('P7-XR11',2),'$12');
 assert.equal(answerAt('P7-XR12',1),'$1,920');
 assert.equal(questions.filter(q=>q.id.includes('-XR')).length,100);
-console.log('PASS: reading-only 758 questions, 100-new-question entry, 3-document rendering, wrong-answer retry, section navigation, same-day 1024→1124 migration and independent arithmetic checks.');
+console.log('PASS: reading-only 806 questions, 100-new-question entry, 3-document rendering, wrong-answer retry, section navigation, same-day 1024→1172 migration and independent arithmetic checks.');
 
 assert.equal(previousBank.length,1024);assert.equal(createHash("sha256").update(JSON.stringify(previousBank)).digest("hex"),"29747f2ac05762558b429e83307c9c3b5fa157d7566baa8e81d0dbcb7cb0a421");
 console.log("PASS: all previous 1024 question records are unchanged.");
+
+const imported=questions.filter(q=>q.sourceKind==='open');assert.equal(imported.length,48);assert.equal(imported.filter(q=>q.part===5).length,24);
+for(const q of imported){assert.equal(q.sourceLicense,'MIT');assert.equal(q.sourceCommit,'a940bb8b479ef4d06af468015d757041c3d2e457');if(q.part===7){assert(q.documents.some(d=>d.text.includes(q.evidence)),q.id);assert.equal(q.choiceNotes.length,4);assert.equal(q.groupSize,4)}}
+await listeners.click({target:{closest:()=>({dataset:{action:'advanced'}})}});assert.equal(run('practiceIds().length'),48);
+await listeners.click({target:{closest:()=>({dataset:{action:'sources'}})}});assert(html.includes('官方樣題'));assert.equal(officialSources.length,4);
+await listeners.click({target:{closest:()=>({dataset:{action:'images'}})}});assert.equal((html.match(/<img /g)||[]).length,30);
+console.log('PASS: 48 MIT-attributed public simulations, answer evidence, advanced selector, source links and 30-image gallery.');

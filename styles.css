@@ -9,3 +9,5 @@ audio{display:block;width:100%;margin-bottom:12px;height:42px}
 .scene-photo{border-radius:14px;border:1px solid #dae3e9;box-shadow:0 5px 16px #16354d14;object-fit:contain;background:#eef2f5}.accent-label{font-size:13px;color:#274f70;line-height:1.7;margin:0 0 10px}
 
 .reading-entry{border:1px solid #bcd4f2;background:linear-gradient(135deg,#fff,#edf5ff)}.reading-links{margin:12px 0 6px;flex-wrap:wrap}.reading-entry h2{margin:0}.document{font-family:Arial,"Noto Sans TC",sans-serif;line-height:1.85}
+
+.image-check{margin-left:0;margin-right:0}.image-check figcaption{font-size:13px;color:#315473}.transcript blockquote{margin:10px 0;padding:12px;background:#edf5ff;border-left:3px solid #527baa}.image-load-error{padding:14px;background:#fff1e5;color:#784514}
