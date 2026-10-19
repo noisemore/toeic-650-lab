@@ -8,9 +8,9 @@ import {dailyDate,dailyGoal,ensureDailyPlan,dailyProgress,dailyQuestionOrder} fr
 import {sceneSvg} from './scenes.js';
 import {lexiconPage,filterLexicon,LEXICON_SOURCES} from './lexicon.js';
 const root=new URL('./',import.meta.url),read=f=>fs.readFileSync(new URL(f,root),'utf8');
-assert.equal(questions.length,1024);assert.equal(words.length,3000);assert.equal(engineering.length,400);
-assert.equal(new Set([...questions,...words,...engineering].map(q=>q.id)).size,4424);
-const counts=[30,132,102,102,316,132,210];
+assert.equal(questions.length,1124);assert.equal(words.length,3000);assert.equal(engineering.length,400);
+assert.equal(new Set([...questions,...words,...engineering].map(q=>q.id)).size,4524);
+const counts=[30,132,102,102,336,152,270];
 for(let p=1;p<=7;p++)assert.equal(questions.filter(q=>q.part===p).length,counts[p-1]);
 for(const q of questions){
   assert(q.question&&q.explanation.length>=8&&q.grammar&&q.topic,q.id);
@@ -30,7 +30,7 @@ assert.deepEqual([...new Set(questions.filter(q=>q.part===7).map(q=>q.documents.
 const oldQuestions=questions.filter(q=>!q.id.includes('-X'));
 assert.equal(oldQuestions.length,120);
 assert.equal(createHash('sha256').update(JSON.stringify(oldQuestions)).digest('hex'),'634e7a8f152245876c4955c3145c5650b0b1f4a3a0b6e04418b3c7203b291b32');
-assert.equal(groups.size,147);
+assert.equal(groups.size,164);
 const fingerprints=questions.map(q=>JSON.stringify([q.part,q.question,q.stimulus,q.audio,q.passage,q.documents,q.scene]));
 assert.equal(new Set(fingerprints).size,questions.length,'duplicate prompt and stimulus');
 assert.equal(new Set(questions.filter(q=>q.part===1).map(q=>q.scene)).size,30);
@@ -81,14 +81,14 @@ assert(LEXICON_SOURCES.every(([name,url])=>name&&url.startsWith('https://')));
 console.log('PASS: 3,000 unique words, 400 original collocations, 400 engineering examples, 16 topics, preserved 40 legacy review IDs, bilingual/acronym searches and pagination.');
 const manifest=JSON.parse(read('manifest.webmanifest'));assert.equal(manifest.scope,'./');assert.equal(manifest.display,'standalone');
 for(const icon of manifest.icons){const bytes=fs.readFileSync(new URL(icon.src,root));const size=Number(icon.sizes.split('x')[0]);assert.equal(bytes.readUInt32BE(16),size);assert.equal(bytes.readUInt32BE(20),size)}
-console.log('PASS: 1,024 unique questions, all seven parts, answer ranges, 147 consistent groups, single/double/triple readings, expanded vocabulary and PWA icons.');
+console.log('PASS: 1,124 unique questions, all seven parts, answer ranges, 164 consistent groups, single/double/triple readings, expanded vocabulary and PWA icons.');
 // Persisted random daily tasks: local dates, exact counts, no duplicated completion, safe legacy imports.
 assert.equal(dailyDate(new Date(2026,0,2,0,1)), '2026-01-02');
 assert.equal(words.filter(w=>w.example&&w.exampleZh).length,400);
 const seeded=seed=>()=>{seed=(1664525*seed+1013904223)>>>0;return seed/4294967296};
 const taskData={history:[],reviews:{},settings:{dailyGoal:10,dailyWordGoal:5}};
 const firstPlan=ensureDailyPlan(taskData,questions,words,'2026-10-19',seeded(123));assert(firstPlan.changed);
-assert.equal(new Set(firstPlan.plan.questionOrder).size,1024);assert.equal(new Set(firstPlan.plan.wordOrder).size,400);
+assert.equal(new Set(firstPlan.plan.questionOrder).size,1124);assert.equal(new Set(firstPlan.plan.wordOrder).size,400);
 assert.notDeepEqual(firstPlan.plan.questionOrder,questions.map(q=>q.id));
 const repeatPlan=ensureDailyPlan(taskData,questions,words,'2026-10-19',()=>{throw Error('Must not redraw on same day')});assert(!repeatPlan.changed);assert.equal(repeatPlan.plan,firstPlan.plan);
 for(const [id,items] of groups){const positions=items.map(q=>firstPlan.plan.questionOrder.indexOf(q.id));for(let n=1;n<positions.length;n++)assert.equal(positions[n],positions[n-1]+1,id+' daily group order')}
@@ -125,14 +125,14 @@ for(let i=0;i<questions.length;i++){
 for(let p=1;p<=7;p++){run(`partFilter='${p}';mode='all';practice()`);assert.equal(run('practiceIds().length'),counts[p-1])}
 // Large-bank pagination, safe searches, and random queues retain all group members in order.
 run("partFilter='all';mode='all';practicePage=0;practiceSearch='';practice()");
-assert.equal((html.match(/class="listbtn"/g)||[]).length,30);assert(html.includes('1 / 35'));
-const pageOne=html;run('practicePage=1;practice()');assert.notEqual(html,pageOne);assert(html.includes('2 / 35'));
-run("practiceSearch='P5-X';practicePage=0;practice()");assert.equal(run('practiceIds().length'),280);assert(html.includes('1 / 10'));
+assert.equal((html.match(/class="listbtn"/g)||[]).length,30);assert(html.includes('1 / 38'));
+const pageOne=html;run('practicePage=1;practice()');assert.notEqual(html,pageOne);assert(html.includes('2 / 38'));
+run("practiceSearch='P5-X';practicePage=0;practice()");assert.equal(run('practiceIds().length'),300);assert(html.includes('1 / 10'));
 run("practiceSearch='被動語態';practice()");assert(run('practiceIds().length')>=7);
 run("practiceSearch='no-such-question-zz';practice()");assert(html.includes('目前沒有符合條件'));
-run("practiceSearch='';practicePage=999;practice()");assert.equal(run('practicePage'),34);assert.equal((html.match(/class="listbtn"/g)||[]).length,4);
+run("practiceSearch='';practicePage=999;practice()");assert.equal(run('practicePage'),37);assert.equal((html.match(/class="listbtn"/g)||[]).length,14);
 run("practicePage=0;const shuffled=shuffledPracticeIds()");
-const shuffled=run('shuffled');assert.equal(shuffled.length,1024);assert.equal(new Set(shuffled).size,1024);
+const shuffled=run('shuffled');assert.equal(shuffled.length,1124);assert.equal(new Set(shuffled).size,1124);
 for(const [id,items] of groups){const positions=items.map(q=>shuffled.indexOf(q.id));for(let n=1;n<positions.length;n++)assert.equal(positions[n],positions[n-1]+1,id+' shuffled adjacency')}
 console.log('PASS: 30-question pagination, final page, ID/Chinese searches, empty results, grouped random queue with no omissions or duplicates.');
 // Old v1 history and bookmarks remain valid; wrong answers clear only after a correct retry.
@@ -147,7 +147,7 @@ run("lexicon('words')");assert.equal((html.match(/data-word-id=/g)||[]).length,3
 run("lexStates.engineering.search='MFC';lexicon('engineering')");assert(html.includes('mass flow controller'));
 run("lexStates.engineering.search='zzzz-no-result';lexicon('engineering')");assert(html.includes('沒有符合的詞彙'));
 run("data.reviews={'W-1':{at:'2026-10-18'}};lexStates.words.status='studied';lexicon('words')");assert(html.includes('maintenance'));assert.equal((html.match(/data-word-id=/g)||[]).length,1);
-console.log('PASS: all 1,024 quiz screens, hidden listening answers, correct-answer feedback, part filtering, v1 history/bookmarks compatibility, audio stop cancellation.');
+console.log('PASS: all 1,124 quiz screens, hidden listening answers, correct-answer feedback, part filtering, v1 history/bookmarks compatibility, audio stop cancellation.');
 // Exercise actual daily buttons, saves, quiz submissions and completion routing.
 let persistedDailyData;
 context.testDB={transaction(){return {objectStore(){return {put(value){persistedDailyData=JSON.parse(JSON.stringify(value));const request={};queueMicrotask(()=>request.onsuccess?.());return request}}}}}};
@@ -176,15 +176,61 @@ const caches={async keys(){return [...stores.keys()]},async delete(k){return sto
 vm.runInNewContext(read('sw.js'),{caches,URL,Request:class{constructor(url,options){this.url=String(url);this.cache=options.cache}},location:{origin:'https://noisemore.github.io'},fetch:async()=>{if(offline)throw Error('offline');return {ok:true}},self:{registration:{scope:base},clients:{claim(){}},skipWaiting(){},addEventListener(n,f){events[n]=f}}});
 let pending;events.install({waitUntil(p){pending=p}});await pending;events.activate({waitUntil(p){pending=p}});await pending;
 assert(!stores.has('toeic-650-lab-v1.0.1'));assert(stores.has('unrelated-app'));offline=true;
-for(const url of stores.get('toeic-650-lab-v4.2.0').keys()){let result;events.fetch({request:{url,method:'GET'},respondWith(p){result=p}});assert(await result,url)}
+for(const url of stores.get('toeic-650-lab-v4.3.0').keys()){let result;events.fetch({request:{url,method:'GET'},respondWith(p){result=p}});assert(await result,url)}
 let fallback;events.fetch({request:{url:base+'?source=home',method:'GET',mode:'navigate'},respondWith(p){fallback=p}});assert.equal((await fallback).body,'index.html');
 let intercepted=false;events.fetch({request:{url:'https://noisemore.github.io/another-app/',method:'GET'},respondWith(){intercepted=true}});assert(!intercepted);
-console.log('PASS: 279 fresh-network precached resources offline, navigation fallback, scoped requests, prior-version cache cleanup and unrelated cache preservation.');
+console.log('PASS: 280 fresh-network precached resources offline, navigation fallback, scoped requests, prior-version cache cleanup and unrelated cache preservation.');
 console.log('NOT COVERED: Android install/flight mode and audible speech output require a real device; live browser smoke test is separate.');
 
 const clips=JSON.parse(read("audio-metadata.json")).clips;assert.equal(Object.keys(clips).length,230);
 for(const q of questions.filter(q=>q.part<5)){const c=clips[q.audioSrc];assert(c&&c.duration>3,q.id);assert.equal(c.transcriptSha256,createHash("sha256").update(q.audio).digest("hex"),q.id);assert.deepEqual(c.accents,audioMeta[q.audioSrc].accents);if(q.part===3)assert.equal(c.speakers.length,2,q.id)}
 for(const country of ["US","GB","CA","AU"])assert(Object.values(clips).filter(c=>c.accents.includes(country)).length>=50);
-for(const q of questions.filter(q=>q.part===1)){const src=sceneSvg(q.scene).match(/src="\.\/(.*?)"/)[1];assert(fs.statSync(new URL(src,root)).size>10000);assert(stores.get("toeic-650-lab-v4.2.0").has(base+src))}
-assert.equal(stores.get("toeic-650-lab-v4.2.0").size,279);
-console.log("PASS: four regional accents, fixed dialogue voices, exact script hashes, all 30 photo assets cached and 279 resources.");
+for(const q of questions.filter(q=>q.part===1)){const src=sceneSvg(q.scene).match(/src="\.\/(.*?)"/)[1];assert(fs.statSync(new URL(src,root)).size>10000);assert(stores.get("toeic-650-lab-v4.3.0").has(base+src))}
+assert.equal(stores.get("toeic-650-lab-v4.3.0").size,280);
+console.log("PASS: four regional accents, fixed dialogue voices, exact script hashes, all 30 photo assets cached and 280 resources.");
+
+// Reading-only navigation, new-bank entry and back navigation use the real event handlers.
+run("data=defaultData();practiceSection='all';page='home';home()");
+assert(html.includes('閱讀測驗｜Reading'));assert(html.includes('758 題'));
+await listeners.click({target:{closest:()=>({dataset:{action:'reading'}})}});
+assert.equal(run('practiceSection'),'reading');assert.equal(run('practiceIds().length'),758);
+assert(html.includes('閱讀測驗題庫'));assert(!html.includes('data-part="1"'));
+await listeners.click({target:{closest:()=>({dataset:{readingPart:'7'}})}});
+assert.equal(run('practiceIds().length'),270);
+await listeners.click({target:{closest:()=>({dataset:{action:'reading-new'}})}});
+assert.equal(run('practiceIds().length'),100);assert(run('practiceIds().every(id=>id.includes("-XR"))'));
+const readingQueue=run('shuffledPracticeIds()');assert.equal(readingQueue.length,100);
+run("startAt('P7-XR041')");assert.equal((html.match(/class="document"/g)||[]).length,3);assert(!html.includes('listening-audio'));
+await listeners.click({target:{closest:()=>({dataset:{nav:'practice'}})}});
+assert.equal(run('practiceSection'),'reading');assert.equal(run('practiceIds().length'),100);
+run("startAt('P5-XR001');selected=(questions[index].answer+1)%4");await run('submit()');
+run("practiceSearch='';mode='wrong';practice()");assert(run('practiceIds().includes("P5-XR001")'));
+run("startAt('P5-XR001');selected=questions[index].answer");await run('submit()');
+run("mode='wrong';practice()");assert(!run('practiceIds().includes("P5-XR001")'));
+await listeners.click({target:{closest:()=>({dataset:{section:'listening'}})}});
+run("mode='all';practiceSearch='';practice()");assert.equal(run('practiceIds().length'),366);
+await listeners.click({target:{closest:()=>({dataset:{action:'all-practice'}})}});assert.equal(run('practiceIds().length'),1124);
+
+// Same-day bank expansion preserves today's order, word choices and learned markers.
+const previousBank=questions.filter(q=>!q.id.includes('-XR')),migrating={settings:{dailyGoal:10,dailyWordGoal:5},history:[]};
+const prior=ensureDailyPlan(migrating,previousBank,words,'2026-10-19',()=>.4).plan;
+prior.learnedWordIds=[prior.wordOrder[0]];const before=structuredClone(prior);
+assert(ensureDailyPlan(migrating,questions,words,'2026-10-19',()=>.6).changed);
+assert.deepEqual(migrating.daily.questionOrder.slice(0,1024),before.questionOrder);
+assert.deepEqual(migrating.daily.wordOrder,before.wordOrder);assert.deepEqual(migrating.daily.learnedWordIds,before.learnedWordIds);
+assert.equal(new Set(migrating.daily.questionOrder).size,1124);
+
+// Independently calculated answers for the new cross-document tasks.
+assert.equal(answerAt('P7-XR05',0),'About 10:35 a.m.');
+assert.equal(answerAt('P7-XR06',0),'Twenty-one');assert.equal(answerAt('P7-XR06',1),'$0');
+assert.equal(answerAt('P7-XR07',1),'9:45 a.m.');
+assert.equal(answerAt('P7-XR08',1),'$220');assert.equal(answerAt('P7-XR08',2),'$30');assert.equal(answerAt('P7-XR08',4),'$130');
+assert.equal(answerAt('P7-XR09',2),'$230');
+assert.equal(answerAt('P7-XR10',0),'The 8:30 a.m. shuttle');assert.equal(answerAt('P7-XR10',1),'9:00 a.m.');
+assert.equal(answerAt('P7-XR11',0),'Eighteen');assert.equal(answerAt('P7-XR11',1),'$438');assert.equal(answerAt('P7-XR11',2),'$12');
+assert.equal(answerAt('P7-XR12',1),'$1,920');
+assert.equal(questions.filter(q=>q.id.includes('-XR')).length,100);
+console.log('PASS: reading-only 758 questions, 100-new-question entry, 3-document rendering, wrong-answer retry, section navigation, same-day 1024→1124 migration and independent arithmetic checks.');
+
+assert.equal(previousBank.length,1024);assert.equal(createHash("sha256").update(JSON.stringify(previousBank)).digest("hex"),"29747f2ac05762558b429e83307c9c3b5fa157d7566baa8e81d0dbcb7cb0a421");
+console.log("PASS: all previous 1024 question records are unchanged.");

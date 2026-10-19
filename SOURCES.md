@@ -57,3 +57,9 @@ ECDICT 資料版本：ecdict.csv，檔案提交 82c9872576b23118d7c42e920c11beb7
 語音模型：https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_GB/vctk/medium
 
 VCTK 作者 Christophe Veaux、Junichi Yamagishi、Kirsten MacDonald，University of Edinburgh；資料集 CC BY 4.0。來源與變更說明見 AUDIO-LICENSE.txt。
+
+## v4.3.0 閱讀擴充
+
+reading-bank.js 新增 100 題原創閱讀：20 題 Part 5、5 組 Part 6 共 20 題、12 組 Part 7 共 60 題（單／雙／三篇各 4 組）。題目、選項、文章、中文大意及解析均為本專案編寫；未複製官方或商業題庫。人名、組織與交易情境為虛構。主題涵蓋一般職場與設備服務，情境不構成實際操作指引。
+
+舊 1,024 題的完整 JSON 雜湊保留驗證；新增題具不同語境，答案位置輪替；所有新增題均納入畫面渲染、去重、答案索引及題組一致性測試。跨文件時間、數量、費用及退款條件另列獨立核對。新增閱讀分類、專用首頁入口、新題篩選與今日任務更新相容測試。

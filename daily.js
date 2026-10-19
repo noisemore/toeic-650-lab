@@ -10,6 +10,10 @@ const validOrder=(order,ids)=>Array.isArray(order)&&order.length===ids.size&&new
 export function ensureDailyPlan(data,questions,words,date=dailyDate(),random=Math.random){
  const eligible=words.filter(w=>w.example&&w.exampleZh),questionIds=new Set(questions.map(q=>q.id)),wordIds=new Set(eligible.map(w=>w.id));
  let plan=data.daily,changed=false;
+ // Append newly published questions without reordering an existing same-day plan.
+ if(plan?.date===date&&Array.isArray(plan.questionOrder)&&plan.questionOrder.length>0&&plan.questionOrder.length<questionIds.size&&new Set(plan.questionOrder).size===plan.questionOrder.length&&plan.questionOrder.every(id=>questionIds.has(id))&&validOrder(plan.wordOrder,wordIds)){
+  const existing=new Set(plan.questionOrder);plan.questionOrder.push(...dailyQuestionOrder(questions.filter(q=>!existing.has(q.id)),random));changed=true;
+ }
  if(!plan||plan.date!==date||!validOrder(plan.questionOrder,questionIds)||!validOrder(plan.wordOrder,wordIds)){
   plan={date,questionOrder:dailyQuestionOrder(questions,random),wordOrder:shuffleDaily(eligible.map(w=>w.id),random),learnedWordIds:[]};
   data.daily=plan;changed=true;

@@ -7,3 +7,5 @@ audio{display:block;width:100%;margin-bottom:12px;height:42px}
 .daily-goals{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0 22px}.daily-goals label{display:grid;gap:6px}.daily-goals button{grid-column:1/-1}.daily-word .row{gap:10px;flex-wrap:wrap}.daily-word .word{overflow-wrap:anywhere}.daily-word .vocab-example p{line-height:1.75}
 
 .scene-photo{border-radius:14px;border:1px solid #dae3e9;box-shadow:0 5px 16px #16354d14;object-fit:contain;background:#eef2f5}.accent-label{font-size:13px;color:#274f70;line-height:1.7;margin:0 0 10px}
+
+.reading-entry{border:1px solid #bcd4f2;background:linear-gradient(135deg,#fff,#edf5ff)}.reading-links{margin:12px 0 6px;flex-wrap:wrap}.reading-entry h2{margin:0}.document{font-family:Arial,"Noto Sans TC",sans-serif;line-height:1.85}
