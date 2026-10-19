@@ -1,0 +1,28 @@
+TOEIC 650 Lab v4.2.0 audio attribution
+
+Synthetic speech generated from original project scripts using Piper VCTK medium.
+Model: https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_GB/vctk/medium
+Model card: https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD
+The model card identifies the VCTK training dataset as CC BY 4.0.
+
+VCTK Corpus: Christophe Veaux, Junichi Yamagishi, Kirsten MacDonald,
+University of Edinburgh. https://datashare.ed.ac.uk/handle/10283/3443
+License: Creative Commons Attribution 4.0 International.
+https://creativecommons.org/licenses/by/4.0/
+Legal code: https://creativecommons.org/licenses/by/4.0/legalcode
+No endorsement by the authors, speakers, university, or ETS is implied.
+
+Official speaker background metadata:
+https://datashare.ed.ac.uk/server/api/core/bitstreams/ab3c7d2f-98b2-4271-b7e4-40a6ffb40d1d/content
+US: p294 (San Francisco), p305 (Philadelphia), p334 (Chicago).
+England: p225 (Southern England), p226 (Surrey).
+Canada: p302 (Montreal), p317 (Hamilton).
+Australia: p326 (Sydney), p374 (Australian English).
+
+Changes: original training speech is not redistributed. New English question
+scripts were synthesized with selected speaker embeddings, sentence pauses,
+slower duration, peak normalization, and 64 kbps MP3 encoding. Regional labels
+describe the training speaker backgrounds, not a guarantee of every regional
+pronunciation. US/Canada use US phonemization; England/Australia use English RP
+phonemization supported by the model. All files are synthetic speech.
+Per-file speaker IDs, accents, segments and script hashes: audio-metadata.json.

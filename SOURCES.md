@@ -47,3 +47,13 @@ ECDICT 資料版本：ecdict.csv，檔案提交 82c9872576b23118d7c42e920c11beb7
 ## v4.1.0 每日精選例句
 
 400 個職場重點詞現皆含本專案整理的完整中英例句，原有 20 句保留。每日精選只從這 400 個有完整例句的職場詞中隨機取樣；2,600 個基礎延伸詞義的 ECDICT 來源與授權不變，未宣稱每個基礎詞都有例句。每日題目從完整原創練習題庫抽樣，當日順序及進度保存在使用者裝置。
+
+## v4.2.0 多國口音與寫實情境圖
+
+230 個聽力音檔改由 Piper VCTK medium 神經語音模型產生，依官方 speaker-info 分配美國、英格蘭、加拿大及澳洲口音；對話角色採固定不同聲音。口音與 speaker ID 記錄於 audio-metadata.json。這些是合成語音，不是真人錄音，不能完整代表各地口音。
+
+30 幅 Part 1 圖片由 OpenAI 圖像生成工具製作，逐張核對題幹與正確選項。無標示答案的替代文字；不是官方考試照片。圖片與全部音檔納入離線預載。首次請連網等待快取完成。
+
+語音模型：https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_GB/vctk/medium
+
+VCTK 作者 Christophe Veaux、Junichi Yamagishi、Kirsten MacDonald，University of Edinburgh；資料集 CC BY 4.0。來源與變更說明見 AUDIO-LICENSE.txt。
