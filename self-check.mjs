@@ -178,18 +178,18 @@ const caches={async keys(){return [...stores.keys()]},async delete(k){return sto
 vm.runInNewContext(read('sw.js'),{caches,URL,Request:class{constructor(url,options){this.url=String(url);this.cache=options.cache}},location:{origin:'https://noisemore.github.io'},fetch:async()=>{if(offline)throw Error('offline');return {ok:true}},self:{registration:{scope:base},clients:{claim(){}},skipWaiting(){},addEventListener(n,f){events[n]=f}}});
 let pending;events.install({waitUntil(p){pending=p}});await pending;events.activate({waitUntil(p){pending=p}});await pending;
 assert(!stores.has('toeic-650-lab-v1.0.1'));assert(stores.has('unrelated-app'));offline=true;
-for(const url of stores.get('toeic-650-lab-v5.0.0').keys()){let result;events.fetch({request:{url,method:'GET'},respondWith(p){result=p}});assert(await result,url)}
+for(const url of stores.get('toeic-650-lab-v5.0.1').keys()){let result;events.fetch({request:{url,method:'GET'},respondWith(p){result=p}});assert(await result,url)}
 let fallback;events.fetch({request:{url:base+'?source=home',method:'GET',mode:'navigate'},respondWith(p){fallback=p}});assert.equal((await fallback).body,'index.html');
 let intercepted=false;events.fetch({request:{url:'https://noisemore.github.io/another-app/',method:'GET'},respondWith(){intercepted=true}});assert(!intercepted);
-console.log('PASS: 284 fresh-network precached resources offline, navigation fallback, scoped requests, prior-version cache cleanup and unrelated cache preservation.');
+console.log('PASS: 286 fresh-network precached resources offline, navigation fallback, scoped requests, prior-version cache cleanup and unrelated cache preservation.');
 console.log('NOT COVERED: Android install/flight mode and audible speech output require a real device; live browser smoke test is separate.');
 
 const clips=JSON.parse(read("audio-metadata.json")).clips;assert.equal(Object.keys(clips).length,230);
 for(const q of questions.filter(q=>q.part<5)){const c=clips[q.audioSrc];assert(c&&c.duration>3,q.id);assert.equal(c.transcriptSha256,createHash("sha256").update(q.audio).digest("hex"),q.id);assert.deepEqual(c.accents,audioMeta[q.audioSrc].accents);if(q.part===3)assert.equal(c.speakers.length,2,q.id)}
 for(const country of ["US","GB","CA","AU"])assert(Object.values(clips).filter(c=>c.accents.includes(country)).length>=50);
-for(const q of questions.filter(q=>q.part===1)){const src=sceneSvg(q.scene).match(/src="\.\/(.*?)"/)[1];assert(fs.statSync(new URL(src,root)).size>10000);assert(stores.get("toeic-650-lab-v5.0.0").has(base+src))}
-assert.equal(stores.get("toeic-650-lab-v5.0.0").size,284);
-console.log("PASS: four regional accents, fixed dialogue voices, exact script hashes, all 30 photo assets cached and 284 resources.");
+for(const q of questions.filter(q=>q.part===1)){const src=sceneSvg(q.scene).match(/src="\.\/(.*?)"/)[1];assert(fs.statSync(new URL(src,root)).size>10000);assert(stores.get("toeic-650-lab-v5.0.1").has(base+src))}
+assert.equal(stores.get("toeic-650-lab-v5.0.1").size,286);
+console.log("PASS: four regional accents, fixed dialogue voices, exact script hashes, all 30 photo assets cached and 286 resources.");
 
 // Reading-only navigation, new-bank entry and back navigation use the real event handlers.
 run("data=defaultData();practiceSection='all';page='home';home()");
@@ -259,3 +259,12 @@ run("data=defaultData();data.history=[{id:'P5-XR001',choice:0,correct:false,date
 const originalDate=context.Date;let clockNow=1000;context.Date=class extends Date{static now(){return clockNow}};
 run("startAt('P5-XR002')");clockNow=2100;run('pauseStudyClock()');assert.equal(run('studyElapsed'),1100);clockNow=9000;run('resumeStudyClock()');clockNow=9500;run('pauseStudyClock()');assert.equal(run('studyElapsed'),1600);context.Date=originalDate;
 console.log('PASS: smart/random modes preserve separate plans, guessed answer scheduling, same-skill transfer, honest report samples, recall-before-reveal, persistent word ratings, due-session completion and active-time clock excludes paused time.');
+
+// Teaching regression: the shown rule and filled example must match the answered question.
+run("db=testDB;data=defaultData();startAt('P5-X141');selected=questions[index].answer");await run('submit()');assert(html.includes('data-lesson="relativePerson"'));assert(html.includes('Employees who complete'));assert(html.includes('本題怎麼用'));assert(html.includes('補充例句（非本題原文）'));assert(!html.includes('their 修飾名詞'));
+run("startAt('P5-X189');selected=questions[index].answer");await run('submit()');assert(html.includes('受詞補語'));assert(!html.includes('主詞感受使用 -ed'));
+run("startAt('P5-XR004');selected=questions[index].answer");await run('submit()');assert(html.includes('data-lesson="futurePerfect"'));assert(html.includes('will have completed'));
+run("startAt('P6-002');selected=questions[index].answer");await run('submit()');assert(html.includes('data-lesson="modal"'));await listeners.click({target:{closest:()=>({dataset:{action:'transfer'}})}});assert.equal(run('quizQueue.length'),1);assert.equal(run('questions[index].part'),6);assert.equal(run('skillFor(questions[index])'),'modal');
+run("startSkill('parallel')");assert(run("quizQueue.every(id=>skillFor(questionById.get(id))==='parallel')"));
+await import('./teaching-check.mjs');
+console.log('PASS: actual UI shows relative-pronoun teaching, question-specific examples, corrected informative explanation and future perfect; Part 6 transfer opens the matched blank only; skill sessions contain no unrelated group members.');

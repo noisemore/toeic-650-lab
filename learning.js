@@ -1,3 +1,5 @@
+import {focusedLessons} from './lesson-catalog.js';
+import {TEACHING} from './teaching-map.js';
 // Local, transparent learning rules. No score conversion or remote AI service.
 export const LESSONS={
  preposition:{name:'介系詞與期限｜Prepositions & Deadlines',rule:'介系詞須配合時間、位置或片語；by 表示最晚期限，until 表示狀態持續到某時。',example:'Please return the form by Friday.',zh:'請最晚在週五前交回表單。',trap:'by Friday 是繳交期限；until Friday 通常描述持續到週五的狀態。',steps:'先分辨時間或位置；檢查期限與持續；將片語連同例句記憶。'},
@@ -25,14 +27,10 @@ export const LESSONS={
  condition:{name:'條件與例外｜Conditions & Exceptions',rule:'辨認誰符合資格、必須先做什麼，以及規則的例外。',example:'Same-day service is available only with prior approval.',zh:'僅事先取得核准者可使用當日服務。',trap:'only、unless、except 會改變適用範圍，不能略讀。',steps:'把規則改寫成如果／才；找例外；逐項檢查選項是否滿足條件。'},
  detail:{name:'定位與同義改寫｜Details & Paraphrase',rule:'以題目線索找段落，再用整句意思核對答案，留意否定與改寫。',example:'The fee is waived. = You do not need to pay the fee.',zh:'費用已免除，也就是不必支付該費用。',trap:'選項重複原文字詞，不代表句意相同；NOT 題要逐項查證。',steps:'先讀問題；定位相關句；用自己的話改寫後比較選項。'}
 };
-export function skillFor(q){
- const g=q.grammar||'',t=q.question||'';
- if(q.part===1)return 'photo';if(q.part===2)return 'response';
- if(q.part<=4)return /mainly|purpose|probably|imply|mean|why.*say/i.test(t)?'listenPurpose':'listenDetail';
- if(q.part===7){if(/計算|推算|金額|數量|數據|預算/.test(g))return 'calculation';if(/推論|主旨|目的|語氣|意圖/.test(g)||/suggest|imply|most likely|probably|main purpose|primarily|why.*written/i.test(t))return 'inference';if(/條件|例外|授權/.test(g))return 'condition';if(/整合|交叉|對照/.test(g)||q.documents?.length>1)return 'integration';return 'detail'}
- if(q.part===6&&/插入/.test(g))return 'insertion';
- if(/情態/.test(g))return 'modal';if(/假設/.test(g))return 'subjunctive';if(/介系詞|期限/.test(g)&&!/動名詞|搭配/.test(g))return 'preposition';if(/一致/.test(g))return 'agreement';if(/被動/.test(g))return 'passive';if(/子句|分詞|假設|平行/.test(g)&&!/時間子句/.test(g))return 'clauses';if(/動名詞|不定詞|動詞形式|動詞$/.test(g))return 'verbForm';if(/連接|條件|讓步|目的表達|時間子句/.test(g))return 'connectors';if(/過去|完成|未來|時態|情態/.test(g))return 'tense';if(/代名詞|所有格|其他與另一/.test(g))return 'pronouns';if(/比較|最高|可數/.test(g))return 'comparison';if(/詞性|名詞位置|形容詞位置|副詞/.test(g))return 'pos';if(/搭配|詞彙|用字|介系詞|期限/.test(g))return 'vocab';return q.part===6?'context':'vocab';
-}
+Object.assign(LESSONS,focusedLessons);
+export function teachingFor(q){const focus=TEACHING[q.id];return focus&&LESSONS[focus.lesson]?focus:null}
+export function teachingExplanation(q){return TEACHING[q.id]?.explanation||q.explanation}
+export function skillFor(q){return teachingFor(q)?.lesson||'questionSpecific'}
 const dayNumber=s=>{if(!/^\d{4}-\d{2}-\d{2}$/.test(s||''))return NaN;const n=Date.parse(s+'T12:00:00Z');return Number.isFinite(n)&&new Date(n).toISOString().slice(0,10)===s?Math.floor(n/86400000):NaN};
 export const addDays=(date,n)=>new Date((dayNumber(date)+n)*86400000).toISOString().slice(0,10);
 export function questionSchedule(history,questions,date){
@@ -66,7 +64,12 @@ export function ensureStudyPlan(data,questions,date,random=Math.random){
  if(!p||p.date!==date||!Array.isArray(p.order)||p.order.length!==ids.size||new Set(p.order).size!==ids.size||!p.order.every(id=>ids.has(id))){p=buildStudyOrder(data,questions,date,random);data.studyPlan=p;changed=true}
  return {plan:p,changed};
 }
-export function transferQuestions(data,questions,q,limit=10){const seen=new Set((data.history||[]).map(h=>h.id));return questions.filter(x=>x.id!==q.id&&(!q.group||x.group!==q.group)&&skillFor(x)===skillFor(q)).sort((a,b)=>Number(seen.has(a.id))-Number(seen.has(b.id))).slice(0,limit).map(x=>x.id)}
+export function transferQuestions(data,questions,q,limit=10){
+ const focus=teachingFor(q);if(!focus)return [];
+ const seen=new Set((data.history||[]).map(h=>h.id));
+ return questions.filter(x=>x.id!==q.id&&x.part===q.part&&(!q.group||x.group!==q.group)&&teachingFor(x)?.transfer===focus.transfer)
+ .sort((a,b)=>Number(seen.has(a.id))-Number(seen.has(b.id))).slice(0,limit).map(x=>x.id);
+}
 export function wordDue(data,items,date){return items.filter(w=>data.wordMemory?.[w.id]&&Number.isFinite(dayNumber(data.wordMemory[w.id].due))&&data.wordMemory[w.id].due<=date)}
 export function rateWord(data,id,remembered,date){
  if(!data.wordMemory||typeof data.wordMemory!=='object'||Array.isArray(data.wordMemory))data.wordMemory={};
