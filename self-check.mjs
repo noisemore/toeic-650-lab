@@ -1,3 +1,4 @@
+import * as learning from './learning.js';
 import {audioMeta,ACCENTS} from './audio-meta.js';
 import fs from 'node:fs';
 import vm from 'node:vm';
@@ -112,7 +113,7 @@ const element={get innerHTML(){return html},set innerHTML(value){html=value}};
 const document={getElementById:id=>id==='app'?element:status,addEventListener:(name,f)=>listeners[name]=f,querySelector:()=>null,createElement:()=>({className:'',textContent:'',remove(){}}),body:{append(){}}};
 const window={scrollTo(){},addEventListener(){},speechSynthesis:null};
 const speechSynthesis={cancel(){},getVoices:()=>[{lang:'en-US'}],speak(u){speech.push(u)}};window.speechSynthesis=speechSynthesis;
-const context=vm.createContext({document,window,navigator:{},speechSynthesis,SpeechSynthesisUtterance:class{constructor(text){this.text=text}},questions,words,engineering,dailyDate,dailyGoal,ensureDailyPlan,dailyProgress,sceneSvg,officialSources,levelFor,levelLabels,audioMeta,ACCENTS,lexiconPage,LEXICON_SOURCES,console,setTimeout:()=>0,clearTimeout(){},Date,Blob,URL,confirm:()=>true});
+const context=vm.createContext({...learning,document,window,navigator:{},speechSynthesis,SpeechSynthesisUtterance:class{constructor(text){this.text=text}},questions,words,engineering,dailyDate,dailyGoal,ensureDailyPlan,dailyProgress,sceneSvg,officialSources,levelFor,levelLabels,audioMeta,ACCENTS,lexiconPage,LEXICON_SOURCES,console,setTimeout:()=>0,clearTimeout(){},Date,Blob,URL,confirm:()=>true});
 const app=read('app.js').replace(/^import .*;\n/gm,'').replace(/\ninit\(\);\s*$/,'');vm.runInContext(app,context);
 const run=s=>vm.runInContext(s,context);
 for(let i=0;i<questions.length;i++){
@@ -177,18 +178,18 @@ const caches={async keys(){return [...stores.keys()]},async delete(k){return sto
 vm.runInNewContext(read('sw.js'),{caches,URL,Request:class{constructor(url,options){this.url=String(url);this.cache=options.cache}},location:{origin:'https://noisemore.github.io'},fetch:async()=>{if(offline)throw Error('offline');return {ok:true}},self:{registration:{scope:base},clients:{claim(){}},skipWaiting(){},addEventListener(n,f){events[n]=f}}});
 let pending;events.install({waitUntil(p){pending=p}});await pending;events.activate({waitUntil(p){pending=p}});await pending;
 assert(!stores.has('toeic-650-lab-v1.0.1'));assert(stores.has('unrelated-app'));offline=true;
-for(const url of stores.get('toeic-650-lab-v4.4.0').keys()){let result;events.fetch({request:{url,method:'GET'},respondWith(p){result=p}});assert(await result,url)}
+for(const url of stores.get('toeic-650-lab-v5.0.0').keys()){let result;events.fetch({request:{url,method:'GET'},respondWith(p){result=p}});assert(await result,url)}
 let fallback;events.fetch({request:{url:base+'?source=home',method:'GET',mode:'navigate'},respondWith(p){fallback=p}});assert.equal((await fallback).body,'index.html');
 let intercepted=false;events.fetch({request:{url:'https://noisemore.github.io/another-app/',method:'GET'},respondWith(){intercepted=true}});assert(!intercepted);
-console.log('PASS: 283 fresh-network precached resources offline, navigation fallback, scoped requests, prior-version cache cleanup and unrelated cache preservation.');
+console.log('PASS: 284 fresh-network precached resources offline, navigation fallback, scoped requests, prior-version cache cleanup and unrelated cache preservation.');
 console.log('NOT COVERED: Android install/flight mode and audible speech output require a real device; live browser smoke test is separate.');
 
 const clips=JSON.parse(read("audio-metadata.json")).clips;assert.equal(Object.keys(clips).length,230);
 for(const q of questions.filter(q=>q.part<5)){const c=clips[q.audioSrc];assert(c&&c.duration>3,q.id);assert.equal(c.transcriptSha256,createHash("sha256").update(q.audio).digest("hex"),q.id);assert.deepEqual(c.accents,audioMeta[q.audioSrc].accents);if(q.part===3)assert.equal(c.speakers.length,2,q.id)}
 for(const country of ["US","GB","CA","AU"])assert(Object.values(clips).filter(c=>c.accents.includes(country)).length>=50);
-for(const q of questions.filter(q=>q.part===1)){const src=sceneSvg(q.scene).match(/src="\.\/(.*?)"/)[1];assert(fs.statSync(new URL(src,root)).size>10000);assert(stores.get("toeic-650-lab-v4.4.0").has(base+src))}
-assert.equal(stores.get("toeic-650-lab-v4.4.0").size,283);
-console.log("PASS: four regional accents, fixed dialogue voices, exact script hashes, all 30 photo assets cached and 283 resources.");
+for(const q of questions.filter(q=>q.part===1)){const src=sceneSvg(q.scene).match(/src="\.\/(.*?)"/)[1];assert(fs.statSync(new URL(src,root)).size>10000);assert(stores.get("toeic-650-lab-v5.0.0").has(base+src))}
+assert.equal(stores.get("toeic-650-lab-v5.0.0").size,284);
+console.log("PASS: four regional accents, fixed dialogue voices, exact script hashes, all 30 photo assets cached and 284 resources.");
 
 // Reading-only navigation, new-bank entry and back navigation use the real event handlers.
 run("data=defaultData();practiceSection='all';page='home';home()");
@@ -242,3 +243,19 @@ await listeners.click({target:{closest:()=>({dataset:{action:'advanced'}})}});as
 await listeners.click({target:{closest:()=>({dataset:{action:'sources'}})}});assert(html.includes('官方樣題'));assert.equal(officialSources.length,4);
 await listeners.click({target:{closest:()=>({dataset:{action:'images'}})}});assert.equal((html.match(/<img /g)||[]).length,30);
 console.log('PASS: 48 MIT-attributed public simulations, answer evidence, advanced selector, source links and 30-image gallery.');
+
+// v5 learning routes use real event handlers, saves and active-time clock.
+run("db=testDB;data=defaultData();page='home';home()");assert(html.includes('學習教練'));assert.equal(run('data.settings.studyMode'),'smart');
+const smartOrder=run('JSON.stringify(currentDaily().questionOrder)');const baseOrder=run('JSON.stringify(data.daily.questionOrder)');
+await listeners.change({target:{id:'study-mode',value:'random'}});assert.equal(run('JSON.stringify(currentDaily().questionOrder)'),baseOrder);
+await listeners.change({target:{id:'study-mode',value:'smart'}});assert.equal(run('JSON.stringify(currentDaily().questionOrder)'),smartOrder);
+run("startAt('P5-XR001');selected=questions[index].answer");await listeners.click({target:{closest:()=>({dataset:{confidence:'guess'}})}});await run('submit()');assert.equal(persistedDailyData.history[0].confidence,'guess');assert(html.includes('這題標記為不確定'));assert(html.includes('考點短教學'));assert.equal(run('learningReport(data,questions,today()).firstCorrect'),0);
+await listeners.click({target:{closest:()=>({dataset:{action:'transfer'}})}});assert.notEqual(run('questions[index].id'),'P5-XR001');assert.equal(run('skillFor(questions[index])'),learning.skillFor(questions.find(q=>q.id==='P5-XR001')));
+await listeners.click({target:{closest:()=>({dataset:{action:'report'}})}});assert(html.includes('首次答對'));assert(html.includes('樣本不足'));assert(!html.includes('undefined'));
+await listeners.click({target:{closest:()=>({dataset:{action:'flash-start'}})}});assert.equal(run('page'),'flash');const flashWord=run('flashItems().find(w=>w.id===flashQueue[0])');assert(!html.includes(flashWord.zh));
+await listeners.click({target:{closest:()=>({dataset:{action:'flash-reveal'}})}});assert(html.includes(flashWord.zh));
+await listeners.click({target:{closest:()=>({dataset:{wordRating:'no'}})}});assert.equal(persistedDailyData.wordMemory[flashWord.id].streak,0);assert.equal(persistedDailyData.wordMemory[flashWord.id].due,learning.addDays(run('today()'),1));assert.equal(run('flashIndex'),1);
+run("data=defaultData();data.history=[{id:'P5-XR001',choice:0,correct:false,date:'2000-01-01'}];startDue()");assert.equal(run('questions[index].id'),'P5-XR001');assert(run('coachSession'));await run('selected=questions[index].answer;submit()');await listeners.click({target:{closest:()=>({dataset:{action:'next'}})}});assert.equal(run('page'),'session');assert(html.includes('本次練習完成'));
+const originalDate=context.Date;let clockNow=1000;context.Date=class extends Date{static now(){return clockNow}};
+run("startAt('P5-XR002')");clockNow=2100;run('pauseStudyClock()');assert.equal(run('studyElapsed'),1100);clockNow=9000;run('resumeStudyClock()');clockNow=9500;run('pauseStudyClock()');assert.equal(run('studyElapsed'),1600);context.Date=originalDate;
+console.log('PASS: smart/random modes preserve separate plans, guessed answer scheduling, same-skill transfer, honest report samples, recall-before-reveal, persistent word ratings, due-session completion and active-time clock excludes paused time.');
